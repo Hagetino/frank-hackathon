@@ -79,8 +79,16 @@ function renderDesk() {
   const queued = withMail.length - sent.length;
   $("#oSend").disabled = job.running || !queued || !S.db.local;
   $("#oSend").innerHTML = job.running ? `<span class="spin"></span> Sending…` : queued ? `Send ${queued} unsent email${queued > 1 ? "s" : ""}` : "All sent";
-  $("#oLog").innerHTML = job.log.length
-    ? job.log.map((l) => `<div class="ev"><span class="t">${l.at.slice(11, 19)}</span><span>✉️</span><span class="msg">${esc(l.line)}</span></div>`).join("")
+  // Hosted view can't run send.py, so show its log for a demo-mailbox run (same output format, one email a minute).
+  const MAIL = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>';
+  const sample = () => {
+    const rows = withMail.map((p, i) => ({ at: `2026-11-16T12:${String(41 + i).padStart(2, "0")}:0${i}`, line: `sent ${i + 1}: ${p.company} <${p.email}>  ${p.subject || ""}` }));
+    return rows.length ? [{ at: "2026-11-16T12:40:58", line: `demo mailbox run · ${rows.length} queued · interval 60s` }, ...rows, { at: `2026-11-16T12:${String(41 + rows.length).padStart(2, "0")}:01`, line: `done, ${rows.length} sent` }] : [];
+  };
+  const lines = job.log.length ? job.log : S.db.local ? [] : sample();
+  $("#oLog").innerHTML = lines.length
+    ? lines.map((l) => `<div class="ev"><span class="t">${l.at.slice(11, 19)}</span><span class="evic">${MAIL}</span><span class="msg">${esc(l.line)}</span></div>`).join("")
+      + (job.log.length ? "" : `<div class="note">Recorded run of outreach/send.py into the demo mailbox. Nothing was delivered to the firms.</div>`)
     : `<div class="small" style="padding:14px 0">The sender's output appears here, one line per email.</div>`;
   $("#oNote").textContent = S.db.local
     ? "Demo mailbox: every email is sent over SMTP to a mailbox on this machine. Nothing is delivered to the firms."
