@@ -3,3 +3,4 @@ node_modules/
 .spend.json
 .vercel
 .env*
+.DS_Store

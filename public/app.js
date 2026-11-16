@@ -236,7 +236,25 @@ function renderDraft(l) {
 // ---------- campaign ----------
 const FUNNEL = ["Targeted", "Contacted", "Engaged (open / accept)", "Replied or answered", "Demo booked", "Trial started"];
 const counts = Object.fromEntries(FUNNEL.map((k) => [k, 0]));
+// Unit economics: what this costs vs a human SDR doing the same research and writing.
+const SDR = { minutesPerFirm: 35, eurPerHour: 30 };
+let campSpend0 = null;
+function renderEcon() {
+  const usd = parseFloat($("#spend").textContent.replace("$", "")) || 0;
+  if (campSpend0 === null) campSpend0 = usd;
+  const ai = Math.max(0, usd - campSpend0);
+  const n = counts.Contacted;
+  const hrs = (n * SDR.minutesPerFirm) / 60;
+  $("#econ").innerHTML = [
+    [n, "Firms contacted"],
+    [n ? "$" + (ai / n).toFixed(2) : "–", "AI cost per firm"],
+    [hrs.toFixed(1) + " h", "SDR time it replaced"],
+    [n ? "€" + Math.round(hrs * SDR.eurPerHour) : "€0", "Human cost avoided"],
+    [counts["Demo booked"], "Demos booked, 0 humans", true],
+  ].map(([v, l, d]) => `<div class="card kpi ${d ? "dark" : ""}"><div class="v">${v}</div><div class="l">${l}</div></div>`).join("");
+}
 function renderFunnel() {
+  renderEcon();
   const max = Math.max(1, counts.Targeted);
   $("#funnel").innerHTML = FUNNEL.map((k) => `<div><span>${k}</span><span class="fb"><i style="width:${(counts[k] / max) * 100}%"></i></span><b>${counts[k]}</b></div>`).join("");
 }
@@ -461,7 +479,7 @@ const SAMPLES = [
   "I'm not the right person, speak to our ops manager Karen.",
 ];
 function renderInbox() {
-  $("#iLead").innerHTML = S.leads.slice(0, 30).map((l) => `<option value="${l.id}">${l.rank}. ${esc(l.firm)} · ${esc(l.contact.name)}</option>`).join("");
+  $("#iLead").innerHTML = S.leads.map((l) => `<option value="${l.id}">${l.rank}. ${esc(l.firm)} · ${esc(l.contact.name)}</option>`).join("");
   $("#samples").innerHTML = SAMPLES.map((s, i) => `<button data-i="${i}">${esc(s.slice(0, 42))}…</button>`).join("");
   $("#samples").onclick = (e) => { const b = e.target.closest("button"); if (b) $("#iMsg").value = SAMPLES[+b.dataset.i]; };
 }

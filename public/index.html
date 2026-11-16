@@ -96,9 +96,9 @@
 
     <!-- LEADS -->
     <section id="view-leads" class="hidden">
-      <div class="eyebrow">Step 2 · Qualify</div>
+      <div class="card pagehead"><div class="crumb">Home <span>/</span> Ranked leads</div><div class="eyebrow">Step 2 · Qualify</div>
       <h2>Ranked prospect list</h2>
-      <p class="sub">Every firm scored on fit, admin workload, integration readiness, buying signals and reachability. Click a firm to see why it ranks there and to draft outreach.</p>
+      <p class="sub">Every firm scored on fit, admin workload, integration readiness, buying signals and reachability. Click a firm to see why it ranks there and to draft outreach.</p></div>
       <div class="toolbar">
         <select id="fCluster"><option value="">All clusters</option></select>
         <select id="fTier"><option value="">All tiers</option><option>A</option><option>B</option><option>C</option></select>
@@ -112,14 +112,15 @@
 
     <!-- CAMPAIGN -->
     <section id="view-campaign" class="hidden">
-      <div class="eyebrow">Step 3 · Engage</div>
+      <div class="card pagehead"><div class="crumb">Home <span>/</span> Campaign autopilot</div><div class="eyebrow">Step 3 · Engage</div>
       <h2>Campaign autopilot</h2>
-      <p class="sub">Pick a segment. Claude writes every message for each firm, the sequencer runs email → LinkedIn → AI call → follow-up within the compliance rules, and no one at FRANK touches it.</p>
+      <p class="sub">Pick a segment. Claude writes every message for each firm, the sequencer runs email → LinkedIn → AI call → follow-up within the compliance rules, and no one at FRANK touches it.</p></div>
       <div class="toolbar">
         <select id="cSegment"></select>
         <select id="cCount"><option value="4">Top 4 firms</option><option value="6" selected>Top 6 firms</option><option value="10">Top 10 firms</option></select>
         <button class="btn teal" id="launch">Launch zero-human campaign</button>
       </div>
+      <div class="grid econ" id="econ"></div>
       <div class="grid camp">
         <div class="card">
           <h4 class="eyebrow" style="margin:0 0 14px">Funnel</h4>
@@ -135,9 +136,9 @@
 
     <!-- VOICE -->
     <section id="view-voice" class="hidden">
-      <div class="eyebrow">Step 4 · Convert</div>
+      <div class="card pagehead"><div class="crumb">Home <span>/</span> AI voice agent</div><div class="eyebrow">Step 4 · Convert</div>
       <h2>AI voice agent</h2>
-      <p class="sub">Discloses it is an AI, qualifies, handles objections and books the demo. Talk to it yourself with the microphone, or let a second AI play the broker.</p>
+      <p class="sub">Discloses it is an AI, qualifies, handles objections and books the demo. Talk to it yourself with the microphone, or let a second AI play the broker.</p></div>
       <div class="grid voice">
         <div class="phone">
           <select id="vLead"></select>
@@ -170,9 +171,9 @@
 
     <!-- INBOX -->
     <section id="view-inbox" class="hidden">
-      <div class="eyebrow">Step 5 · Close</div>
+      <div class="card pagehead"><div class="crumb">Home <span>/</span> Inbox agent</div><div class="eyebrow">Step 5 · Close</div>
       <h2>Inbox agent</h2>
-      <p class="sub">Replies come in on any channel. Claude classifies the intent, answers objections, books demos and sends the trial link. A human is pulled in only when it truly needs one.</p>
+      <p class="sub">Replies come in on any channel. Claude classifies the intent, answers objections, books demos and sends the trial link. A human is pulled in only when it truly needs one.</p></div>
       <div class="grid inbox">
         <div class="card">
           <select id="iLead" style="width:100%"></select>

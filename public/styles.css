@@ -375,3 +375,13 @@ h2 { font-weight: 500; font-size: 36px; letter-spacing: -1.4px; }
 .markets button em { font-variant-numeric: tabular-nums; }
 
 tbody td:nth-child(4) { white-space: nowrap; }
+
+/* page headers on inner tabs */
+.pagehead { margin-bottom: 14px; padding: 22px 26px; background: linear-gradient(120deg, rgba(255,255,255,.75), rgba(220,232,247,.55) 60%, rgba(255,226,210,.5)); position: relative; overflow: hidden; }
+.pagehead .crumb { margin-bottom: 14px; }
+.pagehead h2 { margin-top: 4px; }
+.pagehead .sub { margin-bottom: 0; }
+.econ { grid-template-columns: repeat(5, 1fr); margin-bottom: 14px; }
+.econ .kpi .v { font-size: 28px; font-weight: 400; }
+tbody td:last-child { white-space: nowrap; }
+@media (max-width: 1200px) { .econ { grid-template-columns: repeat(2, 1fr); } }
