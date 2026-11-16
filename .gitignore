@@ -1,6 +1,9 @@
 .env
 node_modules/
 .spend.json
+.vercel
+.env*
+.DS_Store
 
 # outreach + cycle runtime files
 outreach/.sink/

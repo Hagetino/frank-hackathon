@@ -3,6 +3,42 @@ const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<
 const eur = (n) => "€" + (n >= 1e6 ? (n / 1e6).toFixed(1) + "M" : n >= 1000 ? Math.round(n / 1000) + "k" : n);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+// ---------- icons (one line set, 24px grid, 1.75 stroke) ----------
+const ICONS = {
+  grid: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  list: '<path d="M9 6h12M9 12h12M9 18h12"/><path d="M4 6h.01M4 12h.01M4 18h.01"/>',
+  send: '<path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/>',
+  phone: '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/>',
+  inbox: '<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.1z"/>',
+  download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/>',
+  arrow: '<path d="M7 17 17 7"/><path d="M7 7h10v10"/>',
+  more: '<circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/>',
+  building: '<path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/>',
+  star: '<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/>',
+  euro: '<path d="M4 10h12"/><path d="M4 14h9"/><path d="M19 6a7.7 7.7 0 0 0-5.2-2A7.9 7.9 0 0 0 6 12c0 4.4 3.5 8 7.8 8 2 0 3.8-.8 5.2-2"/>',
+  trend: '<path d="m22 7-8.5 8.5-5-5L2 17"/><path d="M16 7h6v6"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  sparkles: '<path d="m12 3 1.9 5.8L20 10.5l-6.1 1.7L12 18l-1.9-5.8L4 10.5l6.1-1.7z"/><path d="M19 3v4M17 5h4"/>',
+  mic: '<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v3"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>',
+  x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+  mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/>',
+  linkedin: '<rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 11v5"/><path d="M8 8v.01"/><path d="M12 16v-5"/><path d="M16 16v-3a2 2 0 0 0-4 0"/>',
+  eye: '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  message: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  calendar: '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+  rocket: '<path d="M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1-.1-2.9a2.2 2.2 0 0 0-2.9-.1z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.9A12.9 12.9 0 0 1 22 2c0 2.7-.8 7.5-6 11a22.4 22.4 0 0 1-4 2z"/>',
+  ban: '<circle cx="12" cy="12" r="9"/><path d="m5.7 5.7 12.6 12.6"/>',
+  alert: '<circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/>',
+  play: '<path d="M6 4v16l14-8z"/>',
+  target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+  refresh: '<path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/>',
+  dot: '<circle cx="12" cy="12" r="3"/>',
+  users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
+};
+const icon = (n, cls = "") => `<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ICONS.dot}</svg>`;
+function hydrateIcons(root = document) { root.querySelectorAll("[data-ic]").forEach((el) => { el.outerHTML = icon(el.dataset.ic); }); }
+
 const S = { leads: [], clusters: [], meta: {}, status: {}, drafts: {}, budget: 10 };
 
 async function api(path, body, retry = true) {
@@ -34,6 +70,7 @@ function pipelineCounts() {
 function setStatus(id, s) {
   S.status[id] = s;
   pipelineCounts();
+  document.dispatchEvent(new CustomEvent("outflow:status", { detail: { id, status: s } }));
   if (!$("#view-leads").classList.contains("hidden")) renderLeads();
 }
 
@@ -81,11 +118,11 @@ function renderMap() {
   $("#today").textContent = `It's ${new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" })} · ${A.length} UK brokers ready for outreach`;
   $("#nSample").textContent = S.leads.length;
   $("#kpis").innerHTML = [
-    [S.leads.length, "Brokers mapped", ICON.firms],
-    [A.length, "Tier A", ICON.star],
-    [eur(pipe), "Year-1 value", ICON.eur],
-    [eur(pot), "Full potential", ICON.up],
-    [hrs.toLocaleString() + "h", "Admin freed / week", ICON.clock],
+    [S.leads.length, "Brokers mapped", icon("building")],
+    [A.length, "Tier A", icon("star")],
+    [eur(pipe), "Year-1 value", icon("euro")],
+    [eur(pot), "Full potential", icon("trend")],
+    [hrs.toLocaleString() + "h", "Admin freed / week", icon("clock")],
   ].map(([v, l, ic]) => `<div class="kstat"><div class="v">${v}</div><div class="l"><span class="ic">${ic}</span>${l}</div></div>`).join("");
 
   const zeroHuman = S.leads.filter((l) => l.cluster !== "network").length;
@@ -108,9 +145,9 @@ function renderMap() {
   const ctps = S.leads.filter((l) => !l.compliance.call.ok).length;
   $("#clusterCards").innerHTML = S.clusters.map((c) => `<div class="card ctile" style="--c:${c.color}" data-k="${c.key}" title="${esc(c.play)}">
       <span class="dot"></span><div class="lab">${esc(c.name)}</div><div class="val">${c.count} firms · ${c.avgScore}</div>
-      <div class="foot"><span>${esc(c.motion.split(/[:(,]/)[0].trim())}</span><span class="go">↗</span></div></div>`).join("")
+      <div class="foot"><span>${esc(c.motion.split(/[:(,]/)[0].trim())}</span><span class="go">${icon("arrow")}</span></div></div>`).join("")
     + `<div class="card ctile warn" data-k=""><span class="dot" style="--c:var(--red)"></span><div class="lab">Do-not-call (CTPS)</div><div class="val">${ctps} firms</div>
-      <div class="foot"><span>Email / LinkedIn only</span><span class="go">↗</span></div></div>`;
+      <div class="foot"><span>Email / LinkedIn only</span><span class="go">${icon("arrow")}</span></div></div>`;
   document.querySelectorAll(".ctile").forEach((el) => el.addEventListener("click", () => { $("#fCluster").value = el.dataset.k; show("leads"); }));
 
   // scatter: x = log staff, y = score
@@ -173,7 +210,7 @@ $("#scrim").addEventListener("click", closeDrawer);
 function openDrawer(id) {
   const l = leadById(id);
   const c = l.compliance;
-  const rule = (name, r) => `<div><span class="${r.ok ? "ok" : "no"}">${r.ok ? "✓" : "✕"}</span><div><b>${name}</b> <span class="small">${esc(r.rule)}</span></div></div>`;
+  const rule = (name, r) => `<div><span class="${r.ok ? "ok" : "no"}">${icon(r.ok ? "check" : "x")}</span><div><b>${name}</b> <span class="small">${esc(r.rule)}</span></div></div>`;
   $("#drawer").innerHTML = `
     <div class="drawer-hd"><button class="close" id="dClose">×</button>
       <div class="eyebrow">Rank #${l.rank} · Tier ${l.score.tier} · ${esc(S.meta[l.cluster].name)}</div>
@@ -189,9 +226,9 @@ function openDrawer(id) {
       <div class="section"><h4>Sequence</h4><div class="seq">${l.sequence.map((s) => `<div><b>DAY ${s.day}</b>${esc(s.label)}</div>`).join("")}</div></div>
       <div class="section"><h4>Outreach drafted by Claude</h4><div id="dDraft"></div></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn teal" id="dGen">✨ ${S.drafts[id] ? "Regenerate" : "Draft all channels"}</button>
+        <button class="btn teal" id="dGen">${icon("sparkles")} ${S.drafts[id] ? "Regenerate" : "Draft all channels"}</button>
         <button class="btn" id="dApprove" ${S.drafts[id] ? "" : "disabled"}>Schedule sequence</button>
-        <button class="btn ghost" id="dCall" ${c.call.ok ? "" : "disabled title='CTPS registered'"}>📞 Call with AI agent</button>
+        <button class="btn ghost" id="dCall" ${c.call.ok ? "" : "disabled title='CTPS registered'"}>${icon("phone")} Call with AI agent</button>
       </div>
     </div>`;
   $("#drawer").classList.add("open"); $("#scrim").classList.add("open");
@@ -206,7 +243,7 @@ function openDrawer(id) {
     } catch (e) { $("#dDraft").innerHTML = `<div class="no">${esc(e.message)}</div>`; }
     $("#dGen").disabled = false;
   };
-  $("#dApprove").onclick = () => { setStatus(id, "Sequence scheduled"); $("#dApprove").textContent = "✓ Scheduled"; $("#dApprove").disabled = true; };
+  $("#dApprove").onclick = () => { setStatus(id, "Sequence scheduled"); $("#dApprove").innerHTML = icon("check") + " Scheduled"; $("#dApprove").disabled = true; };
   $("#dCall").onclick = () => { closeDrawer(); $("#vLead").value = id; pickVoiceLead(); show("voice"); };
   if (S.drafts[id]) renderDraft(l);
 }
@@ -222,7 +259,7 @@ function renderDraft(l) {
     ["WhatsApp (after opt-in)", d.whatsapp_followup, true],
   ];
   $("#dDraft").innerHTML = `<div class="angle"><b>Angle:</b> ${esc(d.angle)}</div>
-    <div class="tabs">${tabs.map(([n, , ok], i) => `<button data-i="${i}" class="${i === 0 ? "on" : ""}" ${ok ? "" : "title='Blocked by compliance gate'"}>${ok ? "" : "🚫 "}${n}</button>`).join("")}</div>
+    <div class="tabs">${tabs.map(([n, , ok], i) => `<button data-i="${i}" class="${i === 0 ? "on" : ""}" ${ok ? "" : "title='Blocked by compliance gate'"}>${ok ? "" : icon("ban")}${n}</button>`).join("")}</div>
     <textarea id="dText" rows="12"></textarea><div class="small" id="dCount"></div>`;
   const pickTab = (i) => {
     $("#dText").value = tabs[i][1];
@@ -236,51 +273,128 @@ function renderDraft(l) {
 // ---------- campaign ----------
 const FUNNEL = ["Targeted", "Contacted", "Engaged (open / accept)", "Replied or answered", "Demo booked", "Trial started"];
 const counts = Object.fromEntries(FUNNEL.map((k) => [k, 0]));
+// Unit economics: what this costs vs a human SDR doing the same research and writing.
+const SDR = { minutesPerFirm: 35, eurPerHour: 30 };
+let campSpend0 = null;
+function renderEcon() {
+  const usd = parseFloat($("#spend").textContent.replace("$", "")) || 0;
+  if (campSpend0 === null) campSpend0 = usd;
+  const ai = Math.max(0, usd - campSpend0) + (S.histCost || 0);
+  const n = counts.Contacted;
+  const hrs = (n * SDR.minutesPerFirm) / 60;
+  $("#econ").innerHTML = [
+    [n, "Firms contacted"],
+    [n ? "$" + (ai / n).toFixed(2) : "–", "AI cost per firm"],
+    [hrs.toFixed(1) + " h", "SDR time it replaced"],
+    [n ? "€" + Math.round(hrs * SDR.eurPerHour) : "€0", "Human cost avoided"],
+    [counts["Demo booked"], "Demos booked, 0 humans", true],
+  ].map(([v, l, d]) => `<div class="card kpi ${d ? "dark" : ""}"><div class="v">${v}</div><div class="l">${l}</div></div>`).join("");
+}
 function renderFunnel() {
+  renderEcon();
   const max = Math.max(1, counts.Targeted);
   $("#funnel").innerHTML = FUNNEL.map((k) => `<div><span>${k}</span><span class="fb"><i style="width:${(counts[k] / max) * 100}%"></i></span><b>${counts[k]}</b></div>`).join("");
 }
+// ---------- sample outreach history (simulated, so the demo opens mid-campaign) ----------
+const HISTORY = [];
+const OUTCOMES = ["Trial started", "Demo booked", "Engaged", "Contacted", "Demo booked", "Contacted", "Engaged", "Trial started", "Callback", "Contacted", "Demo booked", "Not interested", "Engaged", "Contacted", "Do not contact", "Contacted"];
+const STEPS = {
+  sent: ["mail", "Email sent", "Email"], li: ["linkedin", "LinkedIn note sent", "LinkedIn"], open: ["eye", "Opened email, watched demo video", "Email"],
+  reply: ["message", "Replied: asked about security and pricing", "Email"], optin: ["check", "Clicked “call me”: consent logged", "Email"],
+  call: ["phone", "AI call: qualified, 6 handlers quoting by hand", "Call"], demo: ["calendar", "Demo booked for Thursday 14:30", "Call"],
+  trial: ["rocket", "Trial started, connecting insurer portals", "Product"], cb: ["refresh", "Asked for a callback in January", "Call"],
+  no: ["x", "Replied: not interested, nurture in 6 months", "Email"], stop: ["ban", "Unsubscribed: suppressed on every channel", "Email"],
+};
+const PATH = {
+  "Trial started": ["sent", "li", "open", "optin", "call", "demo", "trial"], "Demo booked": ["sent", "li", "open", "reply", "optin", "call", "demo"],
+  Engaged: ["sent", "li", "open", "reply"], Contacted: ["sent", "li"], Callback: ["sent", "open", "optin", "call", "cb"],
+  "Not interested": ["sent", "li", "no"], "Do not contact": ["sent", "stop"],
+};
+function seedHistory() {
+  const pool = S.leads.filter((l) => l.cluster !== "network" && l.compliance.email.ok).slice(0, 26);
+  OUTCOMES.forEach((outcome, i) => {
+    const l = pool[(i * 7) % pool.length];
+    if (S.status[l.id]) return;
+    S.status[l.id] = outcome;
+    const steps = PATH[outcome], end = 1 + i * 5, gap = 14 + (i % 4) * 5; // latest step i*5 h ago, earlier steps spaced back
+    steps.forEach((k, j) => {
+      const [ic, text, ch] = STEPS[k];
+      HISTORY.push({ lead: l, ic, text, ch, hoursAgo: end + (steps.length - 1 - j) * gap });
+    });
+  });
+  HISTORY.sort((a, b) => a.hoursAgo - b.hoursAgo);
+  const st = Object.values(S.status);
+  counts.Targeted += st.length;
+  counts.Contacted += st.length;
+  counts["Engaged (open / accept)"] += st.filter((x) => !["Contacted", "Do not contact"].includes(x)).length;
+  counts["Replied or answered"] += st.filter((x) => ["Engaged", "Demo booked", "Trial started", "Callback", "Not interested"].includes(x)).length;
+  counts["Demo booked"] += st.filter((x) => ["Demo booked", "Trial started"].includes(x)).length;
+  counts["Trial started"] += st.filter((x) => x === "Trial started").length;
+  S.histCost = st.length * 0.06; // measured: ~$0.05-0.08 of Claude per firm drafted
+}
+const ago = (h) => (h < 24 ? `${h}h ago` : `${Math.round(h / 24)}d ago`);
+function renderRecent() {
+  const st = Object.values(S.status);
+  const n = (f) => st.filter(f).length;
+  $("#recent").innerHTML = `<div class="rstats">
+      <div><b>${HISTORY.filter((h) => h.ch === "Email" && h.text.startsWith("Email sent")).length}</b><span>emails</span></div>
+      <div><b>${HISTORY.filter((h) => h.ch === "LinkedIn").length}</b><span>LinkedIn</span></div>
+      <div><b>${HISTORY.filter((h) => h.ch === "Call").length}</b><span>AI calls</span></div>
+      <div><b>${n((x) => ["Demo booked", "Trial started"].includes(x))}</b><span>demos</span></div>
+      <div class="hl"><b>0</b><span>humans</span></div></div>
+    <div class="rlist">${HISTORY.slice(0, 9).map((h) => `<div class="rrow" data-id="${h.lead.id}">
+      <span class="evic">${icon(h.ic)}</span>
+      <div class="rtx"><b>${esc(h.lead.firm)}</b><span>${esc(h.text)}</span></div>
+      <span class="rmeta"><em>${h.ch}</em><small>${ago(h.hoursAgo)}</small></span></div>`).join("")}</div>
+    <div class="note">Sample history, simulated for the demo. Campaigns you launch here use live Claude drafts.</div>`;
+  $("#recent").onclick = (e) => { const r = e.target.closest(".rrow"); if (r) openDrawer(r.dataset.id); };
+}
+function seedFeed() {
+  const f = $("#feed"); f.innerHTML = "";
+  HISTORY.slice(0, 14).reverse().forEach((h) => f.insertAdjacentHTML("afterbegin", `<div class="ev"><span class="t">${ago(h.hoursAgo)}</span><span class="evic">${icon(h.ic)}</span><div><span class="who">${esc(h.lead.firm)}</span><div class="msg">${esc(h.text)}</div></div></div>`));
+}
+
 let day0 = 0;
-function feed(lead, msg, icon = "•", ai = false) {
+function feed(lead, msg, ic = "dot", ai = false) {
   const f = $("#feed");
   if (f.querySelector(".small:only-child")) f.innerHTML = "";
   const d = ((Date.now() - day0) / 4000).toFixed(1); // 4 s = 1 day of campaign time
-  f.insertAdjacentHTML("afterbegin", `<div class="ev"><span class="t">Day ${d}</span><span>${icon}</span><div><span class="who">${esc(lead ? lead.firm : "Engine")}</span> ${ai ? '<span class="ai">AI</span>' : ""}<div class="msg">${msg}</div></div></div>`);
+  f.insertAdjacentHTML("afterbegin", `<div class="ev"><span class="t">Day ${d}</span><span class="evic">${icon(ic)}</span><div><span class="who">${esc(lead ? lead.firm : "Engine")}</span> ${ai ? '<span class="ai">AI</span>' : ""}<div class="msg">${msg}</div></div></div>`);
 }
 function hash(s) { let h = 7; for (const c of s) h = (h * 31 + c.charCodeAt(0)) >>> 0; return (h % 1000) / 1000; }
 
 async function runLead(l) {
   counts.Targeted++; renderFunnel();
-  feed(l, `Researching the firm and drafting 6 channel variants…`, "🧠", true);
+  feed(l, `Researching the firm and drafting 6 channel variants…`, "sparkles", true);
   let d;
   try { d = (await api("/api/draft", { leadId: l.id })).draft; S.drafts[l.id] = d; }
-  catch (e) { feed(l, `<span class="no">Draft failed: ${esc(e.message)}</span>`, "⚠️"); return; }
-  feed(l, `Angle: ${esc(d.angle)}`, "🎯", true);
+  catch (e) { feed(l, `<span class="no">Draft failed: ${esc(e.message)}</span>`, "alert"); return; }
+  feed(l, `Angle: ${esc(d.angle)}`, "target", true);
   const r = hash(l.id);
-  if (l.compliance.email.ok) feed(l, `Email sent: “${esc(d.email.subject)}”`, "✉️");
-  else feed(l, `Email skipped: ${esc(l.compliance.email.rule)}`, "🚫");
+  if (l.compliance.email.ok) feed(l, `Email sent: “${esc(d.email.subject)}”`, "mail");
+  else feed(l, `Email skipped: ${esc(l.compliance.email.rule)}`, "ban");
   counts.Contacted++; renderFunnel(); setStatus(l.id, "Contacted");
   await sleep(4000 + r * 3000);
-  feed(l, `LinkedIn note sent to ${esc(l.contact.name)}: “${esc(d.linkedin_note.slice(0, 90))}…”`, "💼");
+  feed(l, `LinkedIn note sent to ${esc(l.contact.name)}: “${esc(d.linkedin_note.slice(0, 90))}…”`, "linkedin");
   await sleep(2500);
-  if (r < 0.8) { counts["Engaged (open / accept)"]++; renderFunnel(); feed(l, l.compliance.email.ok ? "Email opened twice, demo video watched 1:40" : "Connection accepted", "👀"); }
+  if (r < 0.8) { counts["Engaged (open / accept)"]++; renderFunnel(); feed(l, l.compliance.email.ok ? "Email opened twice, demo video watched 1:40" : "Connection accepted", "eye"); }
   await sleep(3500);
   if (l.compliance.call.ok && r < 0.8) {
-    feed(l, "Clicked “call me” in the email: consent to an AI call logged", "✅");
-    feed(l, `AI voice agent calling ${esc(l.contact.name)}. Opener: “${esc(d.call_opener.slice(0, 110))}…”`, "📞", true);
+    feed(l, "Clicked “call me” in the email: consent to an AI call logged", "check");
+    feed(l, `AI voice agent calling ${esc(l.contact.name)}. Opener: “${esc(d.call_opener.slice(0, 110))}…”`, "phone", true);
     await sleep(3000);
-  } else feed(l, l.compliance.call.ok ? "No call: broker has not opted in to a call yet" : "Call skipped: number is on the CTPS register", "🚫");
+  } else feed(l, l.compliance.call.ok ? "No call: broker has not opted in to a call yet" : "Call skipped: number is on the CTPS register", "ban");
   if (r < 0.62) {
     counts["Replied or answered"]++; renderFunnel();
-    feed(l, l.compliance.call.ok ? "Answered: qualified (quotes done by hand across portals)" : "Replied on LinkedIn: “send me more info”", "💬");
+    feed(l, l.compliance.call.ok ? "Answered: qualified (quotes done by hand across portals)" : "Replied on LinkedIn: “send me more info”", "message");
     setStatus(l.id, "Engaged");
   }
   await sleep(3000);
   if (r < 0.42) {
     counts["Demo booked"]++; renderFunnel(); setStatus(l.id, "Demo booked");
-    feed(l, "Demo booked for Thu 14:30, calendar invite sent automatically", "📅");
+    feed(l, "Demo booked for Thu 14:30, calendar invite sent automatically", "calendar");
     await sleep(3500);
-    if (r < 0.3) { counts["Trial started"]++; renderFunnel(); setStatus(l.id, "Trial started"); feed(l, "Self-serve trial started, onboarding agent connecting their insurer portals", "🚀"); }
+    if (r < 0.3) { counts["Trial started"]++; renderFunnel(); setStatus(l.id, "Trial started"); feed(l, "Self-serve trial started, onboarding agent connecting their insurer portals", "rocket"); }
   }
 }
 
@@ -293,9 +407,9 @@ $("#launch").addEventListener("click", async () => {
   if (!targets.length) return feed(null, "Every firm in this segment has already been contacted.");
   $("#launch").disabled = true;
   if (!day0) day0 = Date.now();
-  feed(null, `Campaign launched: ${targets.length} firms${seg ? " in " + esc(S.meta[seg].name) : ""}. Humans involved: 0.`, "▶️");
+  feed(null, `Campaign launched: ${targets.length} firms${seg ? " in " + esc(S.meta[seg].name) : ""}. Humans involved: 0.`, "play");
   await Promise.all(targets.map((l, i) => sleep(i * 1200).then(() => runLead(l))));
-  feed(null, "Campaign batch complete. Non-responders roll into the day-7 follow-up automatically.", "✅");
+  feed(null, "Campaign batch complete. Non-responders roll into the day-7 follow-up automatically.", "check");
   $("#launch").disabled = false;
 });
 
@@ -310,7 +424,24 @@ function loadVoices() {
 }
 if ("speechSynthesis" in window) { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
 
-function speak(text, who) {
+// ElevenLabs voices when the server has a key, browser voices otherwise.
+async function speak(text, who) {
+  if (S.tts) {
+    try {
+      const res = await fetch("/api/tts", { method: "POST", headers: { "content-type": "application/json", "x-demo-key": localStorage.getItem("demoKey") || "" }, body: JSON.stringify({ text, who }) });
+      if (res.ok) {
+        const audio = new Audio(URL.createObjectURL(await res.blob()));
+        V.audio = audio;
+        $("#wave").classList.add("on");
+        await new Promise((r) => { audio.onended = audio.onerror = r; audio.play().catch(r); });
+        $("#wave").classList.remove("on");
+        return;
+      }
+    } catch {}
+  }
+  return speakBrowser(text, who);
+}
+function speakBrowser(text, who) {
   return new Promise((resolve) => {
     if (!("speechSynthesis" in window)) return setTimeout(resolve, 600 + text.length * 35);
     const u = new SpeechSynthesisUtterance(text);
@@ -343,7 +474,7 @@ function pickVoiceLead() {
   $("#vAvatar").textContent = l.contact.name.split(" ").map((p) => p[0]).join("");
   $("#vName").textContent = l.contact.name;
   $("#vFirm").textContent = `${l.contact.role} · ${l.firm}`;
-  $("#vChecks").innerHTML = `<div>✓ Broker opted in to a call (clicked “call me”)</div><div>✓ Screened against CTPS: clear</div><div>✓ Agent discloses it is an AI in the first sentence</div><div>✓ “Don't call again” honoured instantly and logged</div><div>✓ Call recorded and summarised to CRM</div>`;
+  $("#vChecks").innerHTML = `<div>${icon("check")} Broker opted in to a call (clicked “call me”)</div><div>${icon("check")} Screened against CTPS: clear</div><div>${icon("check")} Agent discloses it is an AI in the first sentence</div><div>${icon("check")} “Don't call again” honoured instantly and logged</div><div>${icon("check")} Call recorded and summarised to CRM</div><div>${icon("check")} Voice: ${S.tts ? "ElevenLabs (George / Alice)" : "browser voices (ElevenLabs off)"}</div>`;
 }
 $("#vLead").addEventListener("change", pickVoiceLead);
 $("#vMode").addEventListener("click", (e) => {
@@ -378,9 +509,9 @@ $("#vMic").addEventListener("click", () => {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) { alert("Speech recognition needs Chrome or Edge. Type instead."); return; }
   const rec = new SR(); rec.lang = "en-GB"; rec.interimResults = false;
-  $("#vMic").textContent = "🔴 Listening…";
+  $("#vMic").innerHTML = icon("mic") + " Listening…"; $("#vMic").classList.add("rec");
   rec.onresult = (e) => submitHuman(e.results[0][0].transcript);
-  rec.onend = () => { $("#vMic").textContent = "🎙️ Speak"; };
+  rec.onend = () => { $("#vMic").innerHTML = icon("mic") + " Speak"; $("#vMic").classList.remove("rec"); };
   rec.start();
 });
 
@@ -401,7 +532,7 @@ async function call() {
     state(`Connected · ${clock()} · agent thinking…`);
     let a;
     try { a = (await api("/api/voice", { leadId: l.id, history: V.history })).turn; }
-    catch (e) { bubble("agent", "⚠️ " + e.message); break; }
+    catch (e) { bubble("agent", "Error: " + e.message); break; }
     if (!V.active) break;
     V.history.push({ speaker: "agent", text: a.say }); bubble("agent", a.say);
     result = a;
@@ -413,7 +544,7 @@ async function call() {
       state(`Connected · ${clock()} · broker answering…`);
       let b;
       try { b = (await api("/api/voice", { leadId: l.id, history: V.history, speaker: "broker" })).turn; }
-      catch (e) { bubble("broker", "⚠️ " + e.message); break; }
+      catch (e) { bubble("broker", "Error: " + e.message); break; }
       if (!V.active) break;
       said = b.say; bubble("broker", said); await speak(said, "broker");
       if (b.hang_up) { V.history.push({ speaker: "broker", text: said }); break; }
@@ -437,7 +568,7 @@ function endCall(l, result) {
   state(V.t0 ? `Call ended · ${clock()}` : "Call cancelled");
   if (humanInput) { const r = humanInput; humanInput = null; r(""); }
   if (!result) return;
-  const labels = { demo_booked: ["📅 Demo booked", "Demo booked"], trial_link_sent: ["🚀 Trial link sent", "Trial link sent"], callback: ["🔁 Callback scheduled", "Callback"], not_interested: ["Not interested · nurture in 6 months", "Not interested"], do_not_contact: ["⛔ Do not contact · suppressed everywhere", "Do not contact"], in_progress: ["Call ended before a close", "Called"] };
+  const labels = { demo_booked: ["Demo booked", "Demo booked"], trial_link_sent: ["Trial link sent", "Trial link sent"], callback: ["Callback scheduled", "Callback"], not_interested: ["Not interested · nurture in 6 months", "Not interested"], do_not_contact: ["Do not contact · suppressed everywhere", "Do not contact"], in_progress: ["Call ended before a close", "Called"] };
   const [label, status] = labels[result.outcome] || labels.in_progress;
   setStatus(l.id, status);
   $("#vOutcome").classList.remove("hidden");
@@ -448,22 +579,34 @@ $("#vCall").addEventListener("click", call);
 $("#vHang").addEventListener("click", () => {
   V.active = false;
   window.speechSynthesis?.cancel();
+  V.audio?.pause();
   if (humanInput) { const r = humanInput; humanInput = null; r(""); }
 });
 
 // ---------- inbox ----------
-const SAMPLES = [
-  "Sounds interesting, but we're on Acturis and I'm not handing portal logins to anyone. How does security work?",
-  "How much is it? We're a team of six.",
-  "Not now, we're in the middle of renewal season. Try me in January.",
-  "Please remove me from your list.",
-  "Yes, happy to see it. Thursday works.",
-  "I'm not the right person, speak to our ops manager Karen.",
+// Sample inbound mail: what brokers typically send back after the first touch.
+const MAILS = [
+  { from: "Rachel Barker", firm: "Kingsmere Risk Solutions", subject: "Re: Rekeying commercial quotes across 30 insurers", time: "09:12", body: "Sounds interesting, but we're on OpenGI and I'm not handing portal logins to anyone. How does security work? Who at your end can see our clients' data?" },
+  { from: "Paul Ellis", firm: "Bramley Commercial Insurance", subject: "Re: 20 minutes, a real quote on your portals", time: "09:47", body: "How much is it? We're a team of six handlers, mostly commercial combined and fleet. I need a number before I put time in the diary." },
+  { from: "Fiona Turner", firm: "Lowther Commercial Insurance", subject: "Re: Renewal season", time: "10:03", body: "Not now, we're in the middle of renewal season and nobody has a spare minute. Try me again in January." },
+  { from: "Fiona Fraser", firm: "Fairholme Insurance Brokers", subject: "Re: Equine and agricultural quotes", time: "10:31", body: "Yes, happy to see it. Thursday works. Can you show it on an NFU Mutual quote? That's where we lose the most time." },
+  { from: "Mark Doyle", firm: "Ashcombe Broking Group", subject: "Re: FRANK for multi-branch brokers", time: "11:05", body: "I'm not the right person for this. Speak to our ops manager, Karen Shaw, she looks after systems across the branches." },
+  { from: "Helen Lloyd", firm: "Marlow Insurance Brokers", subject: "Re: Admin hours", time: "11:40", body: "Please remove me from your list." },
 ];
 function renderInbox() {
-  $("#iLead").innerHTML = S.leads.slice(0, 30).map((l) => `<option value="${l.id}">${l.rank}. ${esc(l.firm)} · ${esc(l.contact.name)}</option>`).join("");
-  $("#samples").innerHTML = SAMPLES.map((s, i) => `<button data-i="${i}">${esc(s.slice(0, 42))}…</button>`).join("");
-  $("#samples").onclick = (e) => { const b = e.target.closest("button"); if (b) $("#iMsg").value = SAMPLES[+b.dataset.i]; };
+  $("#iLead").innerHTML = S.leads.map((l) => `<option value="${l.id}">${l.rank}. ${esc(l.firm)} · ${esc(l.contact.name)}</option>`).join("");
+  $("#samples").innerHTML = `<div class="mails">${MAILS.map((m, i) => `<button class="mail" data-i="${i}">
+      <span class="mav">${m.from.split(" ").map((p) => p[0]).join("")}</span>
+      <span class="mtx"><span class="mtop"><b>${esc(m.from)}</b><em>${m.time}</em></span><span class="msub">${esc(m.subject)}</span><span class="mpre">${esc(m.body)}</span></span>
+    </button>`).join("")}</div>`;
+  $("#samples").onclick = (e) => {
+    const b = e.target.closest(".mail"); if (!b) return;
+    const m = MAILS[+b.dataset.i];
+    document.querySelectorAll(".mail").forEach((x) => x.classList.toggle("on", x === b));
+    $("#iMsg").value = m.body;
+    const l = S.leads.find((x) => m.firm && x.firm.startsWith(m.firm));
+    if (l) { $("#iLead").value = l.id; $("#iLead").dispatchEvent(new Event("change", { bubbles: true })); }
+  };
 }
 $("#iGo").addEventListener("click", async () => {
   const msg = $("#iMsg").value.trim(); if (!msg) return;
@@ -488,12 +631,17 @@ $("#iGo").addEventListener("click", async () => {
 // ---------- boot ----------
 (async () => {
   const st = await api("/api/state");
-  S.leads = st.leads; S.clusters = st.clusters; S.budget = st.budget;
+  S.leads = st.leads; S.clusters = st.clusters; S.budget = st.budget; S.tts = st.tts;
   S.clusters.forEach((c) => (S.meta[c.key] = c));
   setSpend(st.spend);
   $("#nLeads").textContent = S.leads.length;
   $("#fCluster").innerHTML += S.clusters.map((c) => `<option value="${c.key}">${esc(c.name)}</option>`).join("");
-  pipelineCounts(); renderMap(); renderSegments(); renderFunnel(); renderVoiceLeads(); renderInbox();
+  hydrateIcons();
+  seedHistory();
+  pipelineCounts(); renderMap(); renderRecent(); renderSegments(); renderFunnel(); seedFeed(); renderVoiceLeads(); renderInbox();
+  // Hook for add-on modules (geomap.js): data + actions, then a ready event.
+  window.outflow = { leads: S.leads, clusters: S.clusters, meta: S.meta, status: S.status, openDrawer, show };
+  document.dispatchEvent(new CustomEvent("outflow:ready"));
   // deep links: #leads, #voice, #leads/L001 opens a firm
   const [view, id] = location.hash.slice(1).split("/");
   if (["map", "leads", "campaign", "voice", "inbox"].includes(view)) show(view);
