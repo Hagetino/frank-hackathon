@@ -201,10 +201,11 @@ async function runLead(l) {
   await sleep(2500);
   if (r < 0.8) { counts["Engaged (open / accept)"]++; renderFunnel(); feed(l, l.compliance.email.ok ? "Email opened twice, demo video watched 1:40" : "Connection accepted", "👀"); }
   await sleep(3500);
-  if (l.compliance.call.ok) {
+  if (l.compliance.call.ok && r < 0.8) {
+    feed(l, "Clicked “call me” in the email: consent to an AI call logged", "✅");
     feed(l, `AI voice agent calling ${esc(l.contact.name)}. Opener: “${esc(d.call_opener.slice(0, 110))}…”`, "📞", true);
     await sleep(3000);
-  } else feed(l, "Call skipped: number is on the CTPS register", "🚫");
+  } else feed(l, l.compliance.call.ok ? "No call: broker has not opted in to a call yet" : "Call skipped: number is on the CTPS register", "🚫");
   if (r < 0.62) {
     counts["Replied or answered"]++; renderFunnel();
     feed(l, l.compliance.call.ok ? "Answered: qualified (quotes done by hand across portals)" : "Replied on LinkedIn: “send me more info”", "💬");
@@ -278,7 +279,7 @@ function pickVoiceLead() {
   $("#vAvatar").textContent = l.contact.name.split(" ").map((p) => p[0]).join("");
   $("#vName").textContent = l.contact.name;
   $("#vFirm").textContent = `${l.contact.role} · ${l.firm}`;
-  $("#vChecks").innerHTML = `<div>✓ Screened against CTPS: clear</div><div>✓ Agent discloses it is an AI in the first sentence</div><div>✓ “Don't call again” honoured instantly and logged</div><div>✓ Call recorded and summarised to CRM</div>`;
+  $("#vChecks").innerHTML = `<div>✓ Broker opted in to a call (clicked “call me”)</div><div>✓ Screened against CTPS: clear</div><div>✓ Agent discloses it is an AI in the first sentence</div><div>✓ “Don't call again” honoured instantly and logged</div><div>✓ Call recorded and summarised to CRM</div>`;
 }
 $("#vLead").addEventListener("change", pickVoiceLead);
 $("#vMode").addEventListener("click", (e) => {
