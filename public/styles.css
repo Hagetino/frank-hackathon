@@ -433,3 +433,18 @@ svg.ic { width: 1.1em; height: 1.1em; fill: none; stroke: currentColor; stroke-w
 @media (max-width: 1200px) { .kstats { grid-template-columns: repeat(3, 1fr); } }
 
 .b-hero { margin: 0; }
+
+/* inbox mail list */
+#samples { display: block; margin: 12px 0; }
+.mails { display: grid; gap: 6px; max-height: 330px; overflow-y: auto; padding-right: 4px; }
+.mail { display: grid; grid-template-columns: 34px 1fr; gap: 10px; text-align: left; background: rgba(255,255,255,.6); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; color: var(--ink); transition: background .15s, border-color .15s; }
+.mail:hover { background: rgba(255,255,255,.95); }
+.mail.on { background: var(--accent-soft); border-color: rgba(255,122,69,.4); }
+.mav { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, #dce8f7, #ffd9c6); display: grid; place-items: center; font-size: 12px; font-weight: 700; }
+.mtx { display: grid; gap: 2px; min-width: 0; }
+.mtop { display: flex; justify-content: space-between; font-size: 13px; }
+.mtop em { font-style: normal; font-size: 11px; color: var(--muted); }
+.msub { font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mpre { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#samples .mail { border-radius: 14px; border: 1px solid var(--line); padding: 10px 12px; font-size: inherit; color: var(--ink); }
+#samples .mail.on { border-color: rgba(255,122,69,.45); }

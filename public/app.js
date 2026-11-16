@@ -364,7 +364,24 @@ function loadVoices() {
 }
 if ("speechSynthesis" in window) { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
 
-function speak(text, who) {
+// ElevenLabs voices when the server has a key, browser voices otherwise.
+async function speak(text, who) {
+  if (S.tts) {
+    try {
+      const res = await fetch("/api/tts", { method: "POST", headers: { "content-type": "application/json", "x-demo-key": localStorage.getItem("demoKey") || "" }, body: JSON.stringify({ text, who }) });
+      if (res.ok) {
+        const audio = new Audio(URL.createObjectURL(await res.blob()));
+        V.audio = audio;
+        $("#wave").classList.add("on");
+        await new Promise((r) => { audio.onended = audio.onerror = r; audio.play().catch(r); });
+        $("#wave").classList.remove("on");
+        return;
+      }
+    } catch {}
+  }
+  return speakBrowser(text, who);
+}
+function speakBrowser(text, who) {
   return new Promise((resolve) => {
     if (!("speechSynthesis" in window)) return setTimeout(resolve, 600 + text.length * 35);
     const u = new SpeechSynthesisUtterance(text);
@@ -397,7 +414,7 @@ function pickVoiceLead() {
   $("#vAvatar").textContent = l.contact.name.split(" ").map((p) => p[0]).join("");
   $("#vName").textContent = l.contact.name;
   $("#vFirm").textContent = `${l.contact.role} · ${l.firm}`;
-  $("#vChecks").innerHTML = `<div>${icon("check")} Broker opted in to a call (clicked “call me”)</div><div>${icon("check")} Screened against CTPS: clear</div><div>${icon("check")} Agent discloses it is an AI in the first sentence</div><div>${icon("check")} “Don't call again” honoured instantly and logged</div><div>${icon("check")} Call recorded and summarised to CRM</div>`;
+  $("#vChecks").innerHTML = `<div>${icon("check")} Broker opted in to a call (clicked “call me”)</div><div>${icon("check")} Screened against CTPS: clear</div><div>${icon("check")} Agent discloses it is an AI in the first sentence</div><div>${icon("check")} “Don't call again” honoured instantly and logged</div><div>${icon("check")} Call recorded and summarised to CRM</div><div>${icon("check")} Voice: ${S.tts ? "ElevenLabs (George / Alice)" : "browser voices (ElevenLabs off)"}</div>`;
 }
 $("#vLead").addEventListener("change", pickVoiceLead);
 $("#vMode").addEventListener("click", (e) => {
@@ -502,22 +519,34 @@ $("#vCall").addEventListener("click", call);
 $("#vHang").addEventListener("click", () => {
   V.active = false;
   window.speechSynthesis?.cancel();
+  V.audio?.pause();
   if (humanInput) { const r = humanInput; humanInput = null; r(""); }
 });
 
 // ---------- inbox ----------
-const SAMPLES = [
-  "Sounds interesting, but we're on Acturis and I'm not handing portal logins to anyone. How does security work?",
-  "How much is it? We're a team of six.",
-  "Not now, we're in the middle of renewal season. Try me in January.",
-  "Please remove me from your list.",
-  "Yes, happy to see it. Thursday works.",
-  "I'm not the right person, speak to our ops manager Karen.",
+// Sample inbound mail: what brokers typically send back after the first touch.
+const MAILS = [
+  { from: "Rachel Barker", firm: "Kingsmere Risk Solutions", subject: "Re: Rekeying commercial quotes across 30 insurers", time: "09:12", body: "Sounds interesting, but we're on OpenGI and I'm not handing portal logins to anyone. How does security work? Who at your end can see our clients' data?" },
+  { from: "Paul Ellis", firm: "Bramley Commercial Insurance", subject: "Re: 20 minutes, a real quote on your portals", time: "09:47", body: "How much is it? We're a team of six handlers, mostly commercial combined and fleet. I need a number before I put time in the diary." },
+  { from: "Fiona Turner", firm: "Lowther Commercial Insurance", subject: "Re: Renewal season", time: "10:03", body: "Not now, we're in the middle of renewal season and nobody has a spare minute. Try me again in January." },
+  { from: "Fiona Fraser", firm: "Fairholme Insurance Brokers", subject: "Re: Equine and agricultural quotes", time: "10:31", body: "Yes, happy to see it. Thursday works. Can you show it on an NFU Mutual quote? That's where we lose the most time." },
+  { from: "Mark Doyle", firm: "Ashcombe Broking Group", subject: "Re: FRANK for multi-branch brokers", time: "11:05", body: "I'm not the right person for this. Speak to our ops manager, Karen Shaw, she looks after systems across the branches." },
+  { from: "Helen Lloyd", firm: "Marlow Insurance Brokers", subject: "Re: Admin hours", time: "11:40", body: "Please remove me from your list." },
 ];
 function renderInbox() {
   $("#iLead").innerHTML = S.leads.map((l) => `<option value="${l.id}">${l.rank}. ${esc(l.firm)} · ${esc(l.contact.name)}</option>`).join("");
-  $("#samples").innerHTML = SAMPLES.map((s, i) => `<button data-i="${i}">${esc(s.slice(0, 42))}…</button>`).join("");
-  $("#samples").onclick = (e) => { const b = e.target.closest("button"); if (b) $("#iMsg").value = SAMPLES[+b.dataset.i]; };
+  $("#samples").innerHTML = `<div class="mails">${MAILS.map((m, i) => `<button class="mail" data-i="${i}">
+      <span class="mav">${m.from.split(" ").map((p) => p[0]).join("")}</span>
+      <span class="mtx"><span class="mtop"><b>${esc(m.from)}</b><em>${m.time}</em></span><span class="msub">${esc(m.subject)}</span><span class="mpre">${esc(m.body)}</span></span>
+    </button>`).join("")}</div>`;
+  $("#samples").onclick = (e) => {
+    const b = e.target.closest(".mail"); if (!b) return;
+    const m = MAILS[+b.dataset.i];
+    document.querySelectorAll(".mail").forEach((x) => x.classList.toggle("on", x === b));
+    $("#iMsg").value = m.body;
+    const l = S.leads.find((x) => m.firm && x.firm.startsWith(m.firm));
+    if (l) { $("#iLead").value = l.id; $("#iLead").dispatchEvent(new Event("change", { bubbles: true })); }
+  };
 }
 $("#iGo").addEventListener("click", async () => {
   const msg = $("#iMsg").value.trim(); if (!msg) return;
@@ -542,7 +571,7 @@ $("#iGo").addEventListener("click", async () => {
 // ---------- boot ----------
 (async () => {
   const st = await api("/api/state");
-  S.leads = st.leads; S.clusters = st.clusters; S.budget = st.budget;
+  S.leads = st.leads; S.clusters = st.clusters; S.budget = st.budget; S.tts = st.tts;
   S.clusters.forEach((c) => (S.meta[c.key] = c));
   setSpend(st.spend);
   $("#nLeads").textContent = S.leads.length;

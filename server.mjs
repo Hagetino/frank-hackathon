@@ -2,7 +2,7 @@ import http from "node:http";
 import { readFile } from "node:fs/promises";
 import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
-import { handleApi, MODEL, BUDGET_USD } from "./lib/app.mjs";
+import { handleApi, handleTts, MODEL, BUDGET_USD } from "./lib/app.mjs";
 
 const here = fileURLToPath(new URL(".", import.meta.url));
 const PORT = Number(process.env.PORT || 3000);
@@ -16,7 +16,13 @@ async function readBody(req) {
 
 http.createServer(async (req, res) => {
   const url = new URL(req.url, "http://x");
-  const api = await handleApi(req.method, url.pathname, req.method === "POST" ? await readBody(req) : {}, req.headers);
+  const body = req.method === "POST" ? await readBody(req) : {};
+  if (req.method === "POST" && url.pathname === "/api/tts") {
+    const [status, type, buf] = await handleTts(body, req.headers);
+    res.writeHead(status, { "content-type": type });
+    return res.end(buf);
+  }
+  const api = await handleApi(req.method, url.pathname, body, req.headers);
   if (api) {
     res.writeHead(api[0], { "content-type": "application/json" });
     return res.end(JSON.stringify(api[1]));
