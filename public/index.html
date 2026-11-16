@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>outflow · zero-human outreach</title>
   <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/dropdown.css" />
 </head>
 <body>
   <div class="app">
@@ -12,11 +13,11 @@
     <div class="logo"><span class="mark"></span>outflow<span>.</span></div>
     <div class="by">built for FRANK</div>
     <div class="tiles" id="nav">
-      <button data-view="map" class="on"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="8" r="3"/><circle cx="17" cy="7" r="2"/><circle cx="15" cy="16" r="3.5"/><circle cx="6" cy="17" r="1.6"/></svg><span>Market map</span></button>
-      <button data-view="leads"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h11M4 18h7"/><path d="M18 15l2 2 3-4"/></svg><span>Leads <em id="nLeads"></em></span></button>
-      <button data-view="campaign"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l16-7-6 16-3-7-7-2z"/></svg><span>Campaign</span></button>
-      <button data-view="voice"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h3l2 5-2.5 1.5a11 11 0 005 5L15 12l5 2v3a3 3 0 01-3 3A15 15 0 013 6a3 3 0 013-3z"/></svg><span>Voice agent</span></button>
-      <button data-view="inbox"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13l3-8h12l3 8v6H3z"/><path d="M3 13h5l1 2h6l1-2h5"/></svg><span>Inbox</span></button>
+      <button data-view="map" class="on"><i data-ic="grid"></i><span>Market map</span></button>
+      <button data-view="leads"><i data-ic="list"></i><span>Leads <em id="nLeads"></em></span></button>
+      <button data-view="campaign"><i data-ic="send"></i><span>Campaign</span></button>
+      <button data-view="voice"><i data-ic="phone"></i><span>Voice agent</span></button>
+      <button data-view="inbox"><i data-ic="inbox"></i><span>Inbox</span></button>
       <div class="tile-stat"><b id="humans">0</b><span>humans involved</span></div>
     </div>
     <div class="side-h">Markets</div>
@@ -59,8 +60,8 @@
           <div class="hero-top">
             <div class="crumb">Home <span>/</span> Market map <span>/</span> United Kingdom</div>
             <div class="iconbtns">
-              <button class="ibtn" id="exportCsv" title="Export ranked list as CSV"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg></button>
-              <button class="ibtn dark" data-goto="campaign" title="Launch a campaign"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"/></svg></button>
+              <button class="ibtn" id="exportCsv" title="Export ranked list as CSV"><i data-ic="download"></i></button>
+              <button class="ibtn dark" data-goto="campaign" title="Launch a campaign"><i data-ic="arrow"></i></button>
             </div>
           </div>
           <h1 id="greet">Good afternoon, team</h1>
@@ -72,15 +73,15 @@
         </div>
 
         <div class="card b-top">
-          <div class="card-hd"><span class="pillsel" id="topDate"></span><b>Today's best prospects</b><button class="ibtn sm" data-goto="leads" title="All leads">⋯</button></div>
+          <div class="card-hd"><b>Today's best prospects</b><div class="hd-r"><span class="pillsel" id="topDate"></span><button class="ibtn sm" data-goto="leads" title="All leads"><i data-ic="more"></i></button></div></div>
           <div id="topList"></div>
         </div>
         <div class="card b-scatter">
-          <div class="card-hd"><div><div class="bignum" id="avgScore">0</div><div class="small">Average fit score · by firm size</div></div><button class="ibtn sm dark" data-goto="leads" title="Open ranked list">↗</button></div>
+          <div class="card-hd"><div><div class="bignum" id="avgScore">0</div><div class="small">Average fit score · by firm size</div></div><button class="ibtn sm dark" data-goto="leads" title="Open ranked list"><i data-ic="arrow"></i></button></div>
           <div id="scatter"></div>
         </div>
         <div class="card b-bars">
-          <div class="card-hd"><b>Segments</b><button class="ibtn sm" title="k-means, 4 clusters">⋯</button></div>
+          <div class="card-hd"><b>Segments</b><button class="ibtn sm" title="k-means, 4 clusters"><i data-ic="more"></i></button></div>
           <div class="barsum"><b id="nSample"></b><span>firms clustered</span></div>
           <div class="cbars" id="clusterBars"></div>
         </div>
@@ -153,7 +154,7 @@
               <button data-mode="ai" class="on">AI plays the broker</button>
               <button data-mode="me">I play the broker (mic)</button>
             </div>
-            <button class="btn teal" id="vCall">📞 Start call</button>
+            <button class="btn teal" id="vCall"><i data-ic="phone"></i> Start call</button>
             <button class="btn red hidden" id="vHang">Hang up</button>
           </div>
         </div>
@@ -161,7 +162,7 @@
           <h4 class="eyebrow" style="margin:0 0 10px">Live transcript</h4>
           <div class="transcript" id="vTranscript"><div class="small">The call transcript appears here.</div></div>
           <div class="talkrow hidden" id="vTalk">
-            <button class="btn ghost" id="vMic">🎙️ Speak</button>
+            <button class="btn ghost" id="vMic"><i data-ic="mic"></i> Speak</button>
             <input type="text" id="vText" placeholder="…or type what the broker says and press Enter" />
           </div>
           <div class="outcome hidden" id="vOutcome"></div>
@@ -191,5 +192,6 @@
   <aside class="drawer" id="drawer"></aside>
 
   <script src="/app.js" type="module"></script>
+  <script src="/dropdown.js" defer></script>
 </body>
 </html>

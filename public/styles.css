@@ -385,3 +385,51 @@ tbody td:nth-child(4) { white-space: nowrap; }
 .econ .kpi .v { font-size: 28px; font-weight: 400; }
 tbody td:last-child { white-space: nowrap; }
 @media (max-width: 1200px) { .econ { grid-template-columns: repeat(2, 1fr); } }
+
+/* ===== icons + alignment pass ===== */
+svg.ic { width: 1.1em; height: 1.1em; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; vertical-align: -0.18em; flex: none; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.ibtn svg.ic { width: 18px; height: 18px; vertical-align: 0; }
+.ibtn.sm svg.ic { width: 16px; height: 16px; }
+.tiles button svg.ic { width: 22px; height: 22px; }
+.tiles button span { display: inline-flex; align-items: center; gap: 4px; }
+.kstat .ic { width: 22px; height: 22px; }
+.kstat .ic svg.ic { width: 13px; height: 13px; vertical-align: 0; }
+.ctile .go svg.ic { width: 13px; height: 13px; vertical-align: 0; }
+.rules span.ok, .rules span.no { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; flex: none; }
+.rules span.ok { background: #e3f6ec; } .rules span.no { background: #fde8e8; }
+.rules span svg.ic { width: 12px; height: 12px; stroke-width: 2.5; vertical-align: 0; }
+.rules div { align-items: flex-start; }
+.tabs button { display: inline-flex; align-items: center; gap: 5px; }
+.tabs button svg.ic { width: 12px; height: 12px; }
+.checks div { display: flex; gap: 8px; align-items: center; }
+.checks svg.ic { color: #ffb38f; stroke-width: 2.4; width: 13px; height: 13px; }
+.ev { grid-template-columns: 58px 30px 1fr; align-items: start; }
+.evic { width: 26px; height: 26px; border-radius: 8px; background: rgba(255,255,255,.9); border: 1px solid var(--line); display: grid; place-items: center; color: var(--ink); }
+.evic svg.ic { width: 14px; height: 14px; vertical-align: 0; }
+#vMic.rec { color: var(--red); border-color: var(--red); }
+
+/* alignment: one rhythm (14px gaps, 20px padding), equal-height rows, footers pinned */
+.bento { align-items: stretch; }
+.b-hero { display: flex; flex-direction: column; }
+.kstats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 18px; margin-top: auto; padding-top: 26px; }
+.b-gauge { padding: 18px 16px; }
+.b-top, .b-scatter, .b-bars { display: flex; flex-direction: column; }
+.card-hd { min-height: 34px; margin-bottom: 14px; }
+.hd-r { display: flex; align-items: center; gap: 8px; }
+#topList { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+#topList .toprow { margin: 0; flex: 1; }
+#scatter { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+.b-bars .cbars { flex: 1; min-height: 200px; height: auto; }
+.b-tiles { align-items: stretch; }
+.ctile { display: flex; flex-direction: column; gap: 4px; min-height: 132px; }
+.ctile .foot { margin-top: auto; padding-top: 10px; gap: 8px; }
+.ctile .foot span:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kpis .kpi, .econ .kpi { display: flex; flex-direction: column; justify-content: space-between; min-height: 104px; }
+.pagehead + .toolbar, .pagehead + .grid { margin-top: 0; }
+.toolbar { margin-bottom: 14px; }
+.toolbar select, .toolbar input, .toolbar .btn { height: 40px; }
+.drawer-bd > div:last-child { gap: 10px; }
+@media (max-width: 1200px) { .kstats { grid-template-columns: repeat(3, 1fr); } }
+
+.b-hero { margin: 0; }
