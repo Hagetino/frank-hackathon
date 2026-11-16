@@ -69,9 +69,9 @@ function renderMap() {
   const y = (v) => H - P - ((v - 30) / 70) * (H - 2 * P);
   const dots = S.leads.map((l) => `<circle cx="${x(l.staff).toFixed(1)}" cy="${y(l.score.total).toFixed(1)}" r="6" fill="${S.meta[l.cluster].color}" fill-opacity=".8" stroke="#fff" data-id="${l.id}" style="cursor:pointer"><title>${esc(l.firm)}: ${l.score.total} (${l.staff} staff)</title></circle>`).join("");
   const ticks = [2, 5, 10, 25, 50, 100].map((t) => `<text x="${x(t)}" y="${H - 12}" font-size="10" fill="#94a3b8" text-anchor="middle">${t}</text>`).join("");
-  const yt = [40, 55, 70, 85, 100].map((t) => `<line x1="${P}" x2="${W - P}" y1="${y(t)}" y2="${y(t)}" stroke="#eef2f7"/><text x="${P - 6}" y="${y(t) + 3}" font-size="10" fill="#94a3b8" text-anchor="end">${t}</text>`).join("");
+  const yt = [40, 55, 70, 85, 100].map((t) => `<line x1="${P}" x2="${W - P}" y1="${y(t)}" y2="${y(t)}" stroke="rgba(17,18,22,.06)"/><text x="${P - 6}" y="${y(t) + 3}" font-size="10" fill="#94a3b8" text-anchor="end">${t}</text>`).join("");
   $("#scatter").innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%">${yt}
-    <line x1="${P}" x2="${W - P}" y1="${y(70)}" y2="${y(70)}" stroke="#00bcd4" stroke-dasharray="4 4"/><text x="${W - P}" y="${y(70) - 5}" font-size="10" fill="#0a7f90" text-anchor="end">tier A threshold</text>
+    <line x1="${P}" x2="${W - P}" y1="${y(70)}" y2="${y(70)}" stroke="#ff7a45" stroke-dasharray="4 4"/><text x="${W - P}" y="${y(70) - 5}" font-size="10" fill="#c2521f" text-anchor="end">tier A threshold</text>
     ${ticks}<text x="${W / 2}" y="${H}" font-size="10" fill="#64748b" text-anchor="middle">staff (log scale)</text>${dots}</svg>
     <div style="display:flex;gap:8px;flex-wrap:wrap">${S.clusters.map((c) => chip(c.key)).join("")}</div>`;
   $("#scatter").querySelectorAll("circle").forEach((c) => c.addEventListener("click", () => openDrawer(c.dataset.id)));
@@ -181,7 +181,7 @@ function feed(lead, msg, icon = "•", ai = false) {
   const f = $("#feed");
   if (f.querySelector(".small:only-child")) f.innerHTML = "";
   const d = ((Date.now() - day0) / 4000).toFixed(1); // 4 s = 1 day of campaign time
-  f.insertAdjacentHTML("afterbegin", `<div class="ev"><span class="t">Day ${d}</span><span>${icon}</span><div><span class="who">${esc(lead ? lead.firm : "Engine")}</span> ${ai ? '<span class="ai">CLAUDE</span>' : ""}<div class="msg">${msg}</div></div></div>`);
+  f.insertAdjacentHTML("afterbegin", `<div class="ev"><span class="t">Day ${d}</span><span>${icon}</span><div><span class="who">${esc(lead ? lead.firm : "Engine")}</span> ${ai ? '<span class="ai">AI</span>' : ""}<div class="msg">${msg}</div></div></div>`);
 }
 function hash(s) { let h = 7; for (const c of s) h = (h * 31 + c.charCodeAt(0)) >>> 0; return (h % 1000) / 1000; }
 
