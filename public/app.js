@@ -35,53 +35,104 @@ function show(view) {
 $("#nav").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) show(b.dataset.view); });
 
 // ---------- map ----------
+const ICON = {
+  firms: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V8l8-4 8 4v12M9 20v-6h6v6"/></svg>',
+  star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg>',
+  eur: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 6a7 7 0 100 12M4 10h9M4 14h9"/></svg>',
+  up: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 17l6-6 4 4 6-7M14 8h6v6"/></svg>',
+  clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>',
+};
+const SHORT = { commercial: "Commercial", network: "Networks", personal: "Personal", specialist: "Specialist" };
+
+function gauge(pct, label, sub) {
+  const r = 90, cx = 110, cy = 110, a0 = Math.PI * 0.85, a1 = Math.PI * 2.15;
+  const pt = (a) => [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+  const arc = (from, to) => { const [x0, y0] = pt(from), [x1, y1] = pt(to); return `M${x0} ${y0} A${r} ${r} 0 ${to - from > Math.PI ? 1 : 0} 1 ${x1} ${y1}`; };
+  const end = a0 + (a1 - a0) * (pct / 100);
+  const [kx, ky] = pt(end);
+  const ticks = [0, 20, 40, 60, 80, 100].map((t) => { const a = a0 + (a1 - a0) * (t / 100); const [x, y] = [cx + (r + 18) * Math.cos(a), cy + (r + 18) * Math.sin(a)]; return `<text x="${x}" y="${y + 3}" font-size="9" fill="#9aa0ab" text-anchor="middle">${t}</text>`; }).join("");
+  return `<svg viewBox="0 0 220 200"><defs><linearGradient id="gg" x1="0" x2="1"><stop offset="0" stop-color="#9cc8ea"/><stop offset="1" stop-color="#ff7a45"/></linearGradient></defs>
+    <path d="${arc(a0, a1)}" stroke="rgba(17,18,22,.08)" stroke-width="16" fill="none" stroke-linecap="round"/>
+    <path d="${arc(a0, end)}" stroke="url(#gg)" stroke-width="16" fill="none" stroke-linecap="round"/>
+    <circle cx="${kx}" cy="${ky}" r="10" fill="#fff" stroke="#ff7a45" stroke-width="4"/>${ticks}</svg>
+    <div class="gv">${pct}%</div><div class="gl">${label}</div><div class="gs">${sub}</div>`;
+}
+
 function renderMap() {
   const A = S.leads.filter((l) => l.score.tier === "A");
   const pipe = S.leads.reduce((s, l) => s + l.score.deal.eur, 0);
   const pot = S.leads.reduce((s, l) => s + l.score.deal.potentialEur, 0);
   const hrs = A.reduce((s, l) => s + l.score.hoursFreedPerWeek, 0);
+  const h = new Date().getHours();
+  $("#greet").textContent = `${h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening"}, team FRANK`;
+  $("#today").textContent = `It's ${new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" })} · ${A.length} UK brokers ready for outreach`;
   $("#nSample").textContent = S.leads.length;
   $("#kpis").innerHTML = [
-    [S.leads.length, "Brokers mapped and enriched"],
-    [A.length, "Tier A prospects (score ≥ 70)"],
-    [eur(pipe), "Year-1 value if all sign"],
-    [eur(pot), "Value at full potential"],
-    [hrs.toLocaleString() + " h", "Admin hours/week FRANK could free at tier A", true],
-  ].map(([v, l, d]) => `<div class="card kpi ${d ? "dark" : ""}"><div class="v">${v}</div><div class="l">${l}</div></div>`).join("");
+    [S.leads.length, "Brokers mapped", ICON.firms],
+    [A.length, "Tier A", ICON.star],
+    [eur(pipe), "Year-1 value", ICON.eur],
+    [eur(pot), "Full potential", ICON.up],
+    [hrs.toLocaleString() + "h", "Admin freed / week", ICON.clock],
+  ].map(([v, l, ic]) => `<div class="kstat"><div class="v">${v}</div><div class="l"><span class="ic">${ic}</span>${l}</div></div>`).join("");
 
-  $("#clusterCards").innerHTML = S.clusters.map((c) => {
-    const top = S.leads.filter((l) => l.cluster === c.key).slice(0, 3);
-    return `<div class="card cluster" style="--c:${c.color}" data-k="${c.key}">
-      <h3>${esc(c.name)}</h3>
-      <div class="stats"><div><b>${c.count}</b>firms</div><div><b>${c.avgScore}</b>avg score</div><div><b>${c.tierA}</b>tier A</div><div><b>${eur(c.pipelineEur)}</b>year-1</div></div>
-      <p>${esc(c.play)}</p>
-      <div class="motion">${esc(c.motion)}</div>
-      <ol>${top.map((l) => `<li>${esc(l.firm)} <span class="small">· ${l.score.total}</span></li>`).join("")}</ol>
-    </div>`;
-  }).join("");
-  document.querySelectorAll(".cluster").forEach((el) => el.addEventListener("click", () => {
-    $("#fCluster").value = el.dataset.k; show("leads");
-  }));
+  const zeroHuman = S.leads.filter((l) => l.cluster !== "network").length;
+  $("#gauge").innerHTML = gauge(Math.round((zeroHuman / S.leads.length) * 100), "Zero-human eligible", `${zeroHuman} of ${S.leads.length} firms can be closed with no one at FRANK involved`);
+
+  $("#topDate").textContent = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+  $("#topList").innerHTML = S.leads.slice(0, 4).map((l) => `<div class="toprow" data-id="${l.id}">
+      <span class="rk">${l.rank}</span>
+      <div><div class="nm">${esc(l.firm)}</div><div class="meta"><span>${esc(l.town)}</span><span>${SHORT[l.cluster]}</span><span>${eur(l.score.deal.eur)}/yr</span></div></div>
+      <span class="sc">${l.score.total}</span></div>`).join("");
+  $("#topList").onclick = (e) => { const r = e.target.closest(".toprow"); if (r) openDrawer(r.dataset.id); };
+
+  $("#avgScore").textContent = Math.round(S.leads.reduce((s, l) => s + l.score.total, 0) / S.leads.length);
+
+  const maxN = Math.max(...S.clusters.map((c) => c.count));
+  $("#clusterBars").innerHTML = S.clusters.map((c, i) => `<div class="cbar c${i}" data-k="${c.key}" style="height:${Math.max(38, (c.count / maxN) * 100)}%" title="${esc(c.name)}">
+      <span class="pc">${c.count}</span><span>${SHORT[c.key]}</span></div>`).join("");
+  $("#clusterBars").onclick = (e) => { const b = e.target.closest(".cbar"); if (b) { $("#fCluster").value = b.dataset.k; show("leads"); } };
+
+  const ctps = S.leads.filter((l) => !l.compliance.call.ok).length;
+  $("#clusterCards").innerHTML = S.clusters.map((c) => `<div class="card ctile" style="--c:${c.color}" data-k="${c.key}" title="${esc(c.play)}">
+      <span class="dot"></span><div class="lab">${esc(c.name)}</div><div class="val">${c.count} firms · ${c.avgScore}</div>
+      <div class="foot"><span>${esc(c.motion.split(/[:(,]/)[0].trim())}</span><span class="go">↗</span></div></div>`).join("")
+    + `<div class="card ctile warn" data-k=""><span class="dot" style="--c:var(--red)"></span><div class="lab">Do-not-call (CTPS)</div><div class="val">${ctps} firms</div>
+      <div class="foot"><span>Email / LinkedIn only</span><span class="go">↗</span></div></div>`;
+  document.querySelectorAll(".ctile").forEach((el) => el.addEventListener("click", () => { $("#fCluster").value = el.dataset.k; show("leads"); }));
 
   // scatter: x = log staff, y = score
-  const W = 640, H = 300, P = 36;
+  const W = 560, H = 230, P = 30;
   const x = (s) => P + (Math.log(s) / Math.log(170)) * (W - 2 * P);
   const y = (v) => H - P - ((v - 30) / 70) * (H - 2 * P);
-  const dots = S.leads.map((l) => `<circle cx="${x(l.staff).toFixed(1)}" cy="${y(l.score.total).toFixed(1)}" r="6" fill="${S.meta[l.cluster].color}" fill-opacity=".8" stroke="#fff" data-id="${l.id}" style="cursor:pointer"><title>${esc(l.firm)}: ${l.score.total} (${l.staff} staff)</title></circle>`).join("");
-  const ticks = [2, 5, 10, 25, 50, 100].map((t) => `<text x="${x(t)}" y="${H - 12}" font-size="10" fill="#94a3b8" text-anchor="middle">${t}</text>`).join("");
-  const yt = [40, 55, 70, 85, 100].map((t) => `<line x1="${P}" x2="${W - P}" y1="${y(t)}" y2="${y(t)}" stroke="rgba(17,18,22,.06)"/><text x="${P - 6}" y="${y(t) + 3}" font-size="10" fill="#94a3b8" text-anchor="end">${t}</text>`).join("");
+  const dots = S.leads.map((l) => `<circle cx="${x(l.staff).toFixed(1)}" cy="${y(l.score.total).toFixed(1)}" r="5.5" fill="${S.meta[l.cluster].color}" fill-opacity=".85" stroke="#fff" data-id="${l.id}" style="cursor:pointer"><title>${esc(l.firm)}: ${l.score.total} (${l.staff} staff)</title></circle>`).join("");
+  const ticks = [2, 5, 10, 25, 50, 100].map((t) => `<text x="${x(t)}" y="${H - 8}" font-size="10" fill="#9aa0ab" text-anchor="middle">${t}</text>`).join("");
+  const yt = [40, 55, 70, 85, 100].map((t) => `<line x1="${P}" x2="${W - P}" y1="${y(t)}" y2="${y(t)}" stroke="rgba(17,18,22,.06)"/><text x="${P - 6}" y="${y(t) + 3}" font-size="10" fill="#9aa0ab" text-anchor="end">${t}</text>`).join("");
   $("#scatter").innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%">${yt}
-    <line x1="${P}" x2="${W - P}" y1="${y(70)}" y2="${y(70)}" stroke="#ff7a45" stroke-dasharray="4 4"/><text x="${W - P}" y="${y(70) - 5}" font-size="10" fill="#c2521f" text-anchor="end">tier A threshold</text>
-    ${ticks}<text x="${W / 2}" y="${H}" font-size="10" fill="#64748b" text-anchor="middle">staff (log scale)</text>${dots}</svg>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">${S.clusters.map((c) => chip(c.key)).join("")}</div>`;
+    <line x1="${P}" x2="${W - P}" y1="${y(70)}" y2="${y(70)}" stroke="#ff7a45" stroke-dasharray="4 4"/><text x="${W - P}" y="${y(70) - 5}" font-size="10" fill="#c2521f" text-anchor="end">tier A</text>
+    ${ticks}${dots}</svg>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">${S.clusters.map((c) => chip(c.key)).join("")}</div>`;
   $("#scatter").querySelectorAll("circle").forEach((c) => c.addEventListener("click", () => openDrawer(c.dataset.id)));
 
   $("#method").innerHTML = `
-    <b>1. Cluster.</b> k-means on four firm features (size, commercial share, specialist share, digital maturity) finds four segments, each with its own pitch and sales motion.<br>
-    <b>2. Score (0–100).</b> Size fit 20 · Admin workload 25 · Integration readiness 20 · Buying signals 20 · Digital maturity 10 · Reachability 5.<br>
-    <b>3. Gate.</b> Per firm, per channel: PECR rules for email (corporate vs individual subscribers), the CTPS register for calls, AI disclosure on every call, WhatsApp only after opt-in.<br>
-    <b>4. Route.</b> Independents go fully zero-human. Multi-branch groups (up to ~€80k potential) get the same AI groundwork, and a human joins only at the close.`;
+    <b>1 · Cluster.</b> k-means on four firm features (size, commercial share, specialist share, digital maturity) finds four segments, each with its own pitch and sales motion. &nbsp;
+    <b>2 · Score (0–100).</b> Size fit 20 · Admin workload 25 · Integration readiness 20 · Buying signals 20 · Digital maturity 10 · Reachability 5. &nbsp;
+    <b>3 · Gate.</b> PECR rules for email, CTPS for calls, AI calls only after opt-in, AI disclosure on every call, WhatsApp only after opt-in. &nbsp;
+    <b>4 · Route.</b> Independents go fully zero-human; multi-branch groups (up to ~€80k potential) get the same AI groundwork and a human joins only at the close.`;
 }
+
+document.addEventListener("click", (e) => {
+  const g = e.target.closest("[data-goto]");
+  if (!g) return;
+  if (g.dataset.tier) { $("#fTier").value = g.dataset.tier; $("#fCluster").value = ""; }
+  show(g.dataset.goto);
+});
+$("#exportCsv").addEventListener("click", () => {
+  const head = ["rank", "firm", "town", "cluster", "score", "tier", "value_eur", "email_ok", "call_ok"];
+  const rows = S.leads.map((l) => [l.rank, l.firm, l.town, l.cluster, l.score.total, l.score.tier, l.score.deal.eur, l.compliance.email.ok, l.compliance.call.ok]);
+  const csv = [head, ...rows].map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n");
+  const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(new Blob([csv], { type: "text/csv" })), download: "outflow-uk-ranked.csv" });
+  a.click();
+});
 
 // ---------- leads ----------
 function renderLeads() {
