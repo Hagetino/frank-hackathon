@@ -6,7 +6,7 @@ import { handleApi, MODEL, BUDGET_USD } from "./lib/app.mjs";
 
 const here = fileURLToPath(new URL(".", import.meta.url));
 const PORT = Number(process.env.PORT || 3000);
-const MIME = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml", ".json": "application/json" };
+const MIME = { ".png": "image/png", ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml", ".json": "application/json" };
 
 async function readBody(req) {
   let raw = "";
@@ -16,7 +16,7 @@ async function readBody(req) {
 
 http.createServer(async (req, res) => {
   const url = new URL(req.url, "http://x");
-  const api = await handleApi(req.method, url.pathname, req.method === "POST" ? await readBody(req) : {}, req.headers);
+  const api = await handleApi(req.method, url.pathname, req.method === "POST" ? await readBody(req) : {}, req.headers, url.searchParams);
   if (api) {
     res.writeHead(api[0], { "content-type": "application/json" });
     return res.end(JSON.stringify(api[1]));

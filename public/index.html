@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>outflow · zero-human outreach</title>
   <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/outreach.css" />
 </head>
 <body>
   <div class="app">
@@ -17,6 +18,8 @@
       <button data-view="campaign"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l16-7-6 16-3-7-7-2z"/></svg><span>Campaign</span></button>
       <button data-view="voice"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h3l2 5-2.5 1.5a11 11 0 005 5L15 12l5 2v3a3 3 0 01-3 3A15 15 0 013 6a3 3 0 013-3z"/></svg><span>Voice agent</span></button>
       <button data-view="inbox"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13l3-8h12l3 8v6H3z"/><path d="M3 13h5l1 2h6l1-2h5"/></svg><span>Inbox</span></button>
+      <button data-view="outreach"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3 8l9 6 9-6"/></svg><span>Outreach</span></button>
+      <button data-view="close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h8l4 4v14H7z"/><path d="M15 3v4h4"/><path d="M10 16c1.5-2.5 2.5-2.5 3.5 0s2 .5 3-1"/></svg><span>Close</span></button>
       <div class="tile-stat"><b id="humans">0</b><span>humans involved</span></div>
     </div>
     <div class="side-h">Markets</div>
@@ -183,6 +186,58 @@
         <div class="card" id="iOut"><div class="small">The agent's decision and answer appear here.</div></div>
       </div>
     </section>
+    <!-- OUTREACH DESK: one JSON file, addresses found on the firms' own pages, a Python sender -->
+    <section id="view-outreach" class="hidden">
+      <div class="eyebrow">Outreach desk · find, write, send</div>
+      <h2>Real firms, found on the open web</h2>
+      <p class="sub">The whole database is one JSON file. Claude searches for brokers, reads each firm's own contact page, and keeps only the addresses printed there, with the page as proof. A short Python script sends one plain-text email a minute.</p>
+      <div class="howto">
+        <div class="card"><span class="n">01 · FIND</span><b>Search, then read their own pages</b><p>A web search lists candidate firms. <span class="mono">outreach/find.py</span> fetches each contact page and picks out the addresses in the HTML.</p></div>
+        <div class="card"><span class="n">02 · TWO RULES</span><b>Never guess. Keep the source.</b><p>No address is built from a name pattern. Every address is stored with the exact page it was printed on.</p></div>
+        <div class="card"><span class="n">03 · SEND</span><b>One a minute, plain text</b><p><span class="mono">outreach/send.py</span> reads the file, sends what is unsent over SMTP, flips <span class="mono">sent</span> to true and saves.</p></div>
+      </div>
+      <div class="grid kpis four" id="oKpis"></div>
+      <div class="toolbar">
+        <button class="btn teal" id="oSend">Send unsent emails</button>
+        <select id="oPace"><option value="4">Demo pace: one every 4 seconds</option><option value="60">Real pace: one a minute</option></select>
+        <button class="btn ghost" id="oReset">Reset demo</button>
+        <a class="btn ghost" href="/api/outreach/state" target="_blank" rel="noopener" style="text-decoration:none">Open the JSON ↗</a>
+        <span class="small" id="oNote"></span>
+      </div>
+      <div class="grid desk">
+        <div>
+          <table>
+            <thead><tr><th>Firm</th><th>Address and where it was printed</th><th>Status</th></tr></thead>
+            <tbody id="oRows"></tbody>
+          </table>
+          <div class="card" style="margin-top:14px"><div class="card-hd"><b>Sender log</b><span class="small">outreach/send.py</span></div><div id="oLog"></div></div>
+        </div>
+        <div class="card" id="oDetail"></div>
+      </div>
+    </section>
+
+    <!-- CLOSE: Sellbird reads the reply and drafts the answer; a yes ends in a signed trial agreement -->
+    <section id="view-close" class="hidden">
+      <div class="eyebrow">Close · reply, follow up, sign</div>
+      <h2>From the first answer to a signed trial</h2>
+      <p class="sub">Sellbird, an open-source outreach engine, reads each reply on your own Claude plan: it honours opt-outs by rule, classifies the intent, moves the deal stage and drafts the answer. A yes gets the one-page trial agreement.</p>
+      <div class="grid closegrid">
+        <div class="card"><div class="card-hd"><b>Conversations</b></div><div class="convs" id="cList"></div></div>
+        <div class="card" id="cMain">
+          <div class="stages" id="cStages"></div>
+          <div class="transcript" id="cThread"></div>
+          <div id="cVerdict" style="margin-top:12px"></div>
+          <div id="cDraft" class="hidden"></div>
+          <div id="cCompose">
+            <div class="small">The firm's reply. Pick a sample or type your own.</div>
+            <div class="samples" id="cSamples"></div>
+            <textarea id="cMsg" rows="3" placeholder="Type what the broker answers"></textarea>
+            <div style="margin-top:10px"><button class="btn" id="cGo">Hand the reply to Sellbird</button></div>
+          </div>
+        </div>
+        <div class="card contract" id="cSide"><div id="cContract"></div></div>
+      </div>
+    </section>
   </main>
   </div>
 
@@ -190,5 +245,6 @@
   <aside class="drawer" id="drawer"></aside>
 
   <script src="/app.js" type="module"></script>
+  <script src="/outreach.js" type="module"></script>
 </body>
 </html>

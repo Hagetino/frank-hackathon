@@ -1,0 +1,56 @@
+# FRANK's settings for Sellbird (github.com/ethanplusai/sellbird), which runs the reply
+# cycle: it reads each answer, classifies it, moves the deal stage and drafts the next email.
+persona:
+  name: "Frank"
+  company: "FRANK"
+  role: "AI assistant"
+  email: "frank@outflow.test"
+  linkedin: ""
+  tone: "friendly, plain British English, short sentences, no hype"
+
+product:
+  name: "FRANK AI Operator"
+  description: >-
+    An AI Operator for insurance brokers and agents. It captures every client request on email,
+    WhatsApp and documents, reads the documents, and does the back-office work inside insurers'
+    portals as a named user: quotes, renewals, policy changes, claims follow-up. Nothing reaches
+    the broker's client without a named person at the broker pressing send. In Portugal, 350+
+    agencies and 1,500+ users run it, and agencies report about 10 hours of admin freed per
+    person per week. FRANK enters the UK in 2027 and has no UK clients and no live UK
+    broker-platform connectors yet: never claim UK customers, UK case studies or UK integrations.
+  pricing: "Trial at 39 euros a month per person, then START at 99 euros a month. No lock-in, cancel any time."
+  key_benefits:
+    - "About 10 hours of admin back per person per week (reported by agencies in Portugal)"
+    - "Works on the insurer portals the broker already uses, as a named user"
+    - "A named person at the broker approves everything before it reaches a client"
+  objection_responses:
+    "too expensive": "The trial is 39 euros for the month with no lock-in, so the test is whether it gives back more than an hour of someone's time."
+    "already have": "It does not replace the broker system. It does the typing into insurer portals around it."
+    "no time": "Setup is a short onboarding and the trial can be cancelled any time."
+    "data": "Data is encrypted in transit and at rest and handled under GDPR; a named person approves anything sent to a client."
+    "acturis": "Be honest: there is no Acturis or OpenGI connector yet. The Operator works directly on insurer portals."
+  offer:
+    primary: "START plan at 99 euros a month per person"
+    entry: "the 39-euro trial month with no lock-in, started by signing the one-page trial agreement at http://localhost:3000/sign.html"
+    goal: "start_trial"
+    booking_method: "calendar_link"
+    booking_url: "http://localhost:3000/sign.html"
+    meeting_duration: "20 minutes"
+    meeting_owner: "FRANK"
+
+icp:
+  industries: ["Insurance brokers", "Insurance agents"]
+  company_size: "2-40 employees"
+  titles: ["Managing Director", "Director", "Owner", "Operations Manager"]
+  geography: ["United Kingdom"]
+
+channels:
+  email:
+    enabled: true
+    provider: "smtp"
+    max_daily_sends: 50
+    require_approval: true
+    link_domains: ["localhost"]
+
+compliance:
+  opt_out_line: "Reply 'stop' and we won't contact you again."

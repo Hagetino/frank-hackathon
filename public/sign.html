@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Trial agreement · FRANK</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/outreach.css" />
+  <style>
+    .signpage { max-width: 980px; margin: 0 auto; padding: 32px 20px 60px; display: grid; grid-template-columns: 1.05fr 1fr; gap: 18px; align-items: start; }
+    .signpage .contract img { aspect-ratio: 16 / 11; }
+    .terms { margin: 14px 0 18px; padding: 0; list-style: none; display: grid; gap: 9px; font-size: 14px; line-height: 1.5; color: #3f4450; }
+    .terms li { padding-left: 18px; position: relative; }
+    .terms li::before { content: ""; position: absolute; left: 0; top: 8px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+    .signpage input[type=text] { width: 100%; font-size: 16px; padding: 12px 14px; margin: 6px 0 12px; }
+    .signpage h2 { font-size: 34px; }
+    @media (max-width: 820px) { .signpage { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="signpage">
+    <div class="card contract"><img src="/assets/contract-3d.png" alt="Trial agreement" /><div class="cbody"><div class="eyebrow">outflow · built for FRANK</div><p class="small" style="margin-top:10px">This page is the whole closing step: read, type your name, sign. Nobody at FRANK takes part.</p></div></div>
+    <div class="card" id="box">
+      <div class="eyebrow">Trial agreement</div>
+      <h2 id="title">FRANK AI Operator</h2>
+      <p class="sub" id="who" style="margin-bottom:0"></p>
+      <ul class="terms">
+        <li>One month of the FRANK AI Operator on the Trial plan: 39 euros per person, up to 100 tasks, VAT excluded.</li>
+        <li>No lock-in. Cancel any time; access runs to the end of the paid month.</li>
+        <li>Nothing reaches your clients until a named person at your firm presses send.</li>
+        <li>Your data is encrypted, handled under GDPR and never shared with third parties.</li>
+        <li>Demo document for the Nova SBE hackathon. It creates no real obligation.</li>
+      </ul>
+      <div id="form">
+        <label class="small" for="name">Type your full name to sign</label>
+        <input type="text" id="name" autocomplete="name" placeholder="Full name" />
+        <button class="btn teal" id="sign">Sign and start the trial</button>
+        <div class="small" id="err" style="margin-top:10px;color:var(--red)"></div>
+      </div>
+    </div>
+  </div>
+  <script type="module">
+    const id = new URLSearchParams(location.search).get("p");
+    const $ = (s) => document.querySelector(s);
+    const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    const done = (c) => { $("#form").innerHTML = `<span class="status">Signed</span><p class="sub" style="margin-top:12px">${esc(c.signed_by)} signed on ${c.signed_at.slice(0, 10)} at ${c.signed_at.slice(11, 16)} UTC. Your trial is open; onboarding starts by email.</p>`; };
+    const res = await fetch(`/api/outreach/contract?p=${encodeURIComponent(id)}`);
+    const data = await res.json();
+    if (!res.ok || !data.contract) { $("#form").innerHTML = `<p class="sub">${esc(data.error || "No agreement is waiting for this link.")}</p>`; }
+    else {
+      $("#who").textContent = `Between FRANK and ${data.company}`;
+      if (data.contract.status === "signed") done(data.contract);
+      $("#sign")?.addEventListener("click", async () => {
+        const r = await fetch("/api/outreach/sign", { method: "POST", headers: { "content-type": "application/json", "x-demo-key": localStorage.getItem("demoKey") || "" }, body: JSON.stringify({ id, name: $("#name").value }) });
+        const d = await r.json();
+        r.ok ? done(d.prospect.contract) : ($("#err").textContent = d.error);
+      });
+    }
+  </script>
+</body>
+</html>

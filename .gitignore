@@ -1,3 +1,10 @@
 .env
 node_modules/
 .spend.json
+
+# outreach + cycle runtime files
+outreach/.sink/
+outreach/*.tmp
+cycle/data/
+__pycache__/
+*.pyc

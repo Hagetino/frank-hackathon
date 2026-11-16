@@ -1,0 +1,119 @@
+{
+  "about": "The whole outreach database. One record per firm. Addresses come only from the firm's own pages (email_source is the exact URL); nothing is guessed. outreach/send.py sends records where sent is false, one a minute.",
+  "found_on": "2026-11-16",
+  "prospects": [
+    {
+      "id": "bawtry",
+      "company": "Bawtry Commercial Brokers Ltd",
+      "website": "https://bawtrycommercial.co.uk",
+      "email": "info@bawtrycommercial.co.uk",
+      "alt_emails": [
+        {
+          "email": "kieran@bawtrycommercial.co.uk",
+          "source": "https://bawtrycommercial.co.uk"
+        }
+      ],
+      "email_source": "https://bawtrycommercial.co.uk",
+      "type": "Independent commercial broker",
+      "location": "Leeds, West Yorkshire",
+      "services": [
+        "Commercial insurance",
+        "Tailored business cover"
+      ],
+      "why": "Commercial-only independent in Leeds. Commercial renewals mean the same risk keyed into several insurer portals, which is the work FRANK takes over. A limited company, so B2B email is allowed with an opt-out.",
+      "subject": "Renewal re-keying at Bawtry",
+      "body": "Hello,\n\nI'm writing to whoever looks after renewals at Bawtry Commercial.\n\nA commercial renewal usually means typing the same risk into several insurer portals, then chasing documents. FRANK is an AI Operator that does that typing for brokers, inside the portals you already use, as a named user. Nothing reaches your client until one of your people presses send.\n\nIn Portugal, agencies using it report about 10 hours of admin back per person each week. We are new to the UK and have no UK clients yet, so I would rather show than tell: 20 minutes, on one of your own quotes.\n\nWould that be worth a look?\n\nFrank\nAI assistant at FRANK\n\nThis email was written by an AI assistant. Reply 'stop' and we won't contact you again.",
+      "sent": false
+    },
+    {
+      "id": "hinks",
+      "company": "Hinks Insurance",
+      "website": "https://www.hinks.co.uk",
+      "email": "mail@hinks.co.uk",
+      "alt_emails": [],
+      "email_source": "https://www.hinks.co.uk",
+      "type": "Independent broker (family and business)",
+      "location": "Hull, East Yorkshire",
+      "services": [
+        "Family cover",
+        "Business cover",
+        "Commercial insurance"
+      ],
+      "why": "Independent in Hull and East Yorkshire covering both family and business insurance: a small team carrying personal and commercial quotes at once. Named staff addresses are also printed on the site; only the general inbox is used. Legal form not confirmed from the site: check before any live send.",
+      "subject": "An hour a day back at Hinks",
+      "body": "Hello,\n\nI'm writing to whoever runs the office at Hinks.\n\nIn a family-run brokerage the same few people sell, quote, renew and chase paperwork. FRANK is an AI Operator that takes the back-office part: it reads the request, fills in the insurer portals you already use, and hands you the quote to check and send. A named person on your side approves everything.\n\nAgencies in Portugal report about 10 hours of admin back per person each week. We are just starting in the UK and have no UK clients yet, so the fair test is a 20-minute demo on one of your own quotes.\n\nIs that something you would look at?\n\nFrank\nAI assistant at FRANK\n\nThis email was written by an AI assistant. Reply 'stop' and we won't contact you again.",
+      "sent": false
+    },
+    {
+      "id": "illingworth",
+      "company": "Illingworth McNair Limited",
+      "website": "https://www.illingworth-mcnair.co.uk",
+      "email": "enquiry@illingworth-mcnair.co.uk",
+      "alt_emails": [],
+      "email_source": "https://www.illingworth-mcnair.co.uk",
+      "type": "Independent insurance broker",
+      "location": "Bingley, West Yorkshire",
+      "services": [
+        "Independent insurance broking"
+      ],
+      "why": "Independent insurance brokers in Bingley, West Yorkshire. An independent places with many insurers, each with its own portal, which is where automated quoting saves the most. Limited company.",
+      "subject": "Fewer portals to type into",
+      "body": "Hello,\n\nI'm writing to whoever manages quotes and renewals at Illingworth McNair.\n\nBeing independent means a long list of insurers, each with its own portal. FRANK is an AI Operator that does the portal work for brokers: it reads the request, enters the risk, and brings back the quote for your team to check. Nothing goes to a client without one of your people pressing send.\n\nAgencies in Portugal report about 10 hours of admin back per person each week. We are new to the UK with no UK clients yet, so I would suggest 20 minutes on one of your own quotes.\n\nWorth a look?\n\nFrank\nAI assistant at FRANK\n\nThis email was written by an AI assistant. Reply 'stop' and we won't contact you again.",
+      "sent": false
+    },
+    {
+      "id": "eyib",
+      "company": "East Yorkshire Insurance Brokers Ltd (EYIB)",
+      "website": "https://www.eyib.co.uk",
+      "email": "sales@eyib.co.uk",
+      "alt_emails": [],
+      "email_source": "https://www.eyib.co.uk",
+      "type": "Independent broker (appointed representative)",
+      "location": "Hull, East Yorkshire",
+      "services": [
+        "Landlord insurance",
+        "Business insurance"
+      ],
+      "why": "Hull broker for landlords and businesses, an appointed representative of Movo Partnership Ltd. Small-ticket business cover in volume, so time per quote decides the margin. Limited company.",
+      "subject": "SME quotes without the re-typing",
+      "body": "Hello,\n\nI'm writing to whoever handles new business quotes at EYIB.\n\nWith SME clients the premium is small and the typing is not: every quote goes into several insurer portals by hand. FRANK is an AI Operator that does that part for brokers, in the portals you already use, and gives your team the result to check and send.\n\nAgencies in Portugal report about 10 hours of admin back per person each week. We are new to the UK and have no UK clients yet, so the honest offer is a 20-minute demo on one of your own quotes.\n\nWould you be open to that?\n\nFrank\nAI assistant at FRANK\n\nThis email was written by an AI assistant. Reply 'stop' and we won't contact you again.",
+      "sent": false
+    },
+    {
+      "id": "kd",
+      "company": "K&D Insurance Brokers Ltd",
+      "website": "https://kdbrokers.co.uk",
+      "email": "enquiries@kdbrokers.co.uk",
+      "alt_emails": [],
+      "email_source": "https://kdbrokers.co.uk",
+      "type": "Business and property broker",
+      "location": "West Midlands and London",
+      "services": [
+        "Business insurance",
+        "Property",
+        "Risk management"
+      ],
+      "why": "Business and property specialist across the West Midlands and London, authorised through a principal firm. Property schedules are document-heavy, a fit for FRANK's document reading. Limited company.",
+      "subject": "Property schedules, read for you",
+      "body": "Hello,\n\nI'm writing to whoever looks after property and business quotes at K&D.\n\nProperty work is documents: schedules, statements of fact, renewal notices, all read and re-typed by hand. FRANK is an AI Operator for brokers that reads those documents, enters the risk into the insurer portals you already use, and brings back the quote for your team to check. A named person on your side approves everything.\n\nAgencies in Portugal report about 10 hours of admin back per person each week. We are new to the UK with no UK clients yet, so I would suggest 20 minutes on one of your own cases.\n\nWould that be useful?\n\nFrank\nAI assistant at FRANK\n\nThis email was written by an AI assistant. Reply 'stop' and we won't contact you again.",
+      "sent": false
+    },
+    {
+      "id": "hicommercial",
+      "company": "HI Commercial Ltd",
+      "website": "https://www.hicommercial.co.uk",
+      "email": null,
+      "alt_emails": [],
+      "email_source": null,
+      "type": "Independent commercial broker",
+      "location": "Hessle, East Yorkshire",
+      "services": [
+        "Commercial insurance"
+      ],
+      "why": "Good fit on paper, but no address is printed in the HTML of its own pages (7 pages checked). Rule 1: never guess an address. Left unsendable until an address is found on a page.",
+      "subject": null,
+      "body": null,
+      "sent": false
+    }
+  ]
+}
