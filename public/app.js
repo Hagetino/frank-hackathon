@@ -5,9 +5,14 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const S = { leads: [], clusters: [], meta: {}, status: {}, drafts: {}, budget: 10 };
 
-async function api(path, body) {
-  const res = await fetch(path, body ? { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) } : {});
+async function api(path, body, retry = true) {
+  const headers = { "content-type": "application/json", "x-demo-key": localStorage.getItem("demoKey") || "" };
+  const res = await fetch(path, body ? { method: "POST", headers, body: JSON.stringify(body) } : {});
   const data = await res.json();
+  if (res.status === 401 && retry) {
+    const key = prompt("Demo passcode (AI features are protected so nobody drains the credit):");
+    if (key) { localStorage.setItem("demoKey", key.trim()); return api(path, body, false); }
+  }
   if (!res.ok) throw new Error(data.error || res.statusText);
   if (data.spend) setSpend(data.spend);
   return data;
@@ -20,8 +25,15 @@ function setSpend(spend) {
 
 const chip = (key) => `<span class="chip" style="--c:${S.meta[key].color}"><i></i>${esc(S.meta[key].name)}</span>`;
 const leadById = (id) => S.leads.find((l) => l.id === id);
+function pipelineCounts() {
+  const st = Object.values(S.status);
+  $("#pTierA").textContent = S.leads.filter((l) => l.score.tier === "A").length;
+  $("#pSeq").textContent = st.length;
+  $("#pReplies").textContent = st.filter((x) => ["Engaged", "In conversation", "Callback"].includes(x)).length;
+}
 function setStatus(id, s) {
   S.status[id] = s;
+  pipelineCounts();
   if (!$("#view-leads").classList.contains("hidden")) renderLeads();
 }
 
@@ -30,6 +42,7 @@ function show(view) {
   document.querySelectorAll("main > section").forEach((s) => s.classList.toggle("hidden", s.id !== "view-" + view));
   document.querySelectorAll("#nav button").forEach((b) => b.classList.toggle("on", b.dataset.view === view));
   if (view === "leads") renderLeads();
+  if (location.hash.slice(1).split("/")[0] !== view) history.replaceState(null, "", "#" + view);
   window.scrollTo(0, 0);
 }
 $("#nav").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) show(b.dataset.view); });
@@ -145,7 +158,7 @@ function renderLeads() {
     <td><span class="bar"><i style="width:${l.score.total}%"></i></span>${l.score.total}</td>
     <td><span class="tier ${l.score.tier}">${l.score.tier}</span></td>
     <td>${eur(l.score.deal.eur)}<div class="small">${esc(l.score.deal.profile)}</div></td>
-    <td><span class="ch ${l.compliance.email.ok ? "" : "no"}">✉️</span><span class="ch">in</span><span class="ch ${l.compliance.call.ok ? "" : "no"}">📞</span></td>
+    <td class="chs"><span class="ch ${l.compliance.email.ok ? "" : "no"}" title="${esc(l.compliance.email.rule)}">Email</span><span class="ch" title="LinkedIn">in</span><span class="ch ${l.compliance.call.ok ? "" : "no"}" title="${esc(l.compliance.call.rule)}">Call</span></td>
     <td>${S.status[l.id] ? `<span class="status">${esc(S.status[l.id])}</span>` : `<span class="small">Not contacted</span>`}</td>
   </tr>`).join("");
 }
@@ -417,7 +430,7 @@ async function call() {
 
 function endCall(l, result) {
   V.active = false; clearInterval(V.timer);
-  speechSynthesis?.cancel?.();
+  window.speechSynthesis?.cancel();
   $("#vAvatar").classList.remove("live"); $("#wave").classList.remove("on");
   $("#vTalk").classList.add("hidden"); $("#vLead").disabled = false;
   $("#vCall").classList.remove("hidden"); $("#vHang").classList.add("hidden");
@@ -434,7 +447,7 @@ $("#vCall").addEventListener("click", call);
 // Hanging up stops the loop; call() then lands in endCall with the last agent turn.
 $("#vHang").addEventListener("click", () => {
   V.active = false;
-  speechSynthesis?.cancel?.();
+  window.speechSynthesis?.cancel();
   if (humanInput) { const r = humanInput; humanInput = null; r(""); }
 });
 
@@ -480,5 +493,9 @@ $("#iGo").addEventListener("click", async () => {
   setSpend(st.spend);
   $("#nLeads").textContent = S.leads.length;
   $("#fCluster").innerHTML += S.clusters.map((c) => `<option value="${c.key}">${esc(c.name)}</option>`).join("");
-  renderMap(); renderSegments(); renderFunnel(); renderVoiceLeads(); renderInbox();
+  pipelineCounts(); renderMap(); renderSegments(); renderFunnel(); renderVoiceLeads(); renderInbox();
+  // deep links: #leads, #voice, #leads/L001 opens a firm
+  const [view, id] = location.hash.slice(1).split("/");
+  if (["map", "leads", "campaign", "voice", "inbox"].includes(view)) show(view);
+  if (id && leadById(id)) openDrawer(id);
 })();

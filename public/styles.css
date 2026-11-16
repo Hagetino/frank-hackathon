@@ -364,3 +364,14 @@ h2 { font-weight: 500; font-size: 36px; letter-spacing: -1.4px; }
   .b-hero, .b-gauge, .b-top, .b-scatter, .b-bars { grid-column: span 12; }
   .b-tiles { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* fixes */
+.tiles button { transition: background .12s, color .12s, transform .15s; }
+.chs { white-space: nowrap; }
+.ch { display: inline-block; font-size: 10px; font-weight: 600; letter-spacing: .3px; padding: 3px 7px; border-radius: 999px; background: var(--ink); color: #fff; margin-right: 4px; text-decoration: none; opacity: 1; }
+.ch.no { background: transparent; color: #a3a8b3; border: 1px dashed rgba(17,18,22,.2); text-decoration: line-through; opacity: 1; }
+.rules b { white-space: nowrap; }
+.rules div > div { flex: 1; }
+.markets button em { font-variant-numeric: tabular-nums; }
+
+tbody td:nth-child(4) { white-space: nowrap; }
