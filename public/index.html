@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FRANK · Zero-human outreach engine</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header>
+    <div class="logo">FRANK<span>.</span><small>Outreach Engine</small></div>
+    <div class="market" id="market">
+      <button class="on">🇬🇧 United Kingdom</button>
+      <button disabled title="Source configured: DGSFP register. Not loaded in this demo.">🇪🇸 Spain</button>
+      <button disabled title="Source configured: SUSEP register. Not loaded in this demo.">🇧🇷 Brazil</button>
+      <button disabled title="Source configured: NIPR / state DOI. Not loaded in this demo.">🇺🇸 United States</button>
+    </div>
+    <div class="hdr-right">
+      <span class="pill">Humans involved <b id="humans">0</b></span>
+      <span class="pill">Claude spend <b id="spend">$0.00</b> <span class="meter"><i id="meter"></i></span></span>
+    </div>
+  </header>
+
+  <nav id="nav">
+    <button data-view="map" class="on">1 · Market map</button>
+    <button data-view="leads">2 · Ranked leads <span class="n" id="nLeads"></span></button>
+    <button data-view="campaign">3 · Campaign autopilot</button>
+    <button data-view="voice">4 · AI voice agent</button>
+    <button data-view="inbox">5 · Inbox agent</button>
+  </nav>
+
+  <main>
+    <!-- MAP -->
+    <section id="view-map">
+      <div class="eyebrow">Step 1 · Reach</div>
+      <h2>UK broker market, clustered and ranked</h2>
+      <p class="sub">Source: FCA Register (authorised insurance intermediaries), enriched with website, LinkedIn and job-post signals. Demo sample of <span id="nSample"></span> fictional firms.</p>
+      <div class="grid kpis" id="kpis"></div>
+      <div class="grid clusters" id="clusterCards"></div>
+      <div class="grid split">
+        <div class="card">
+          <h4 class="eyebrow" style="margin:0 0 6px">Fit score vs firm size</h4>
+          <div id="scatter"></div>
+        </div>
+        <div class="card">
+          <h4 class="eyebrow" style="margin:0 0 6px">How the ranking works</h4>
+          <div id="method" class="small" style="line-height:1.6"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LEADS -->
+    <section id="view-leads" class="hidden">
+      <div class="eyebrow">Step 2 · Qualify</div>
+      <h2>Ranked prospect list</h2>
+      <p class="sub">Every firm scored on fit, admin workload, integration readiness, buying signals and reachability. Click a firm to see why it ranks there and to draft outreach.</p>
+      <div class="toolbar">
+        <select id="fCluster"><option value="">All clusters</option></select>
+        <select id="fTier"><option value="">All tiers</option><option>A</option><option>B</option><option>C</option></select>
+        <input type="text" id="fSearch" placeholder="Search firm or town" />
+      </div>
+      <table>
+        <thead><tr><th>#</th><th>Firm</th><th>Cluster</th><th>Fit score</th><th>Tier</th><th>Year-1 value</th><th>Channels</th><th>Status</th></tr></thead>
+        <tbody id="leadRows"></tbody>
+      </table>
+    </section>
+
+    <!-- CAMPAIGN -->
+    <section id="view-campaign" class="hidden">
+      <div class="eyebrow">Step 3 · Engage</div>
+      <h2>Campaign autopilot</h2>
+      <p class="sub">Pick a segment. Claude writes every message for each firm, the sequencer runs email → LinkedIn → AI call → follow-up within the compliance rules, and no one at FRANK touches it.</p>
+      <div class="toolbar">
+        <select id="cSegment"></select>
+        <select id="cCount"><option value="4">Top 4 firms</option><option value="6" selected>Top 6 firms</option><option value="10">Top 10 firms</option></select>
+        <button class="btn teal" id="launch">Launch zero-human campaign</button>
+      </div>
+      <div class="grid camp">
+        <div class="card">
+          <h4 class="eyebrow" style="margin:0 0 14px">Funnel</h4>
+          <div class="funnel" id="funnel"></div>
+          <div class="note">Message content is generated live by Claude. Delivery, opens and replies are simulated in this demo; in production they come from the email, LinkedIn and telephony providers.</div>
+        </div>
+        <div class="card">
+          <h4 class="eyebrow" style="margin:0 0 6px">Live activity</h4>
+          <div class="feed" id="feed"><div class="small" style="padding:20px 0">Launch a campaign to see the engine work.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VOICE -->
+    <section id="view-voice" class="hidden">
+      <div class="eyebrow">Step 4 · Convert</div>
+      <h2>AI voice agent</h2>
+      <p class="sub">Discloses it is an AI, qualifies, handles objections and books the demo. Talk to it yourself with the microphone, or let a second AI play the broker.</p>
+      <div class="grid voice">
+        <div class="phone">
+          <select id="vLead" style="background:var(--navy-2);color:#fff;border-color:#34466e"></select>
+          <div class="avatar" id="vAvatar">?</div>
+          <h3 id="vName">Choose a prospect</h3>
+          <div class="small" id="vFirm"></div>
+          <div class="callstate" id="vState">Ready</div>
+          <div class="wave" id="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="checks" id="vChecks"></div>
+          <div class="controls">
+            <div class="mode" id="vMode">
+              <button data-mode="ai" class="on">AI plays the broker</button>
+              <button data-mode="me">I play the broker (mic)</button>
+            </div>
+            <button class="btn teal" id="vCall">📞 Start call</button>
+            <button class="btn red hidden" id="vHang">Hang up</button>
+          </div>
+        </div>
+        <div class="card">
+          <h4 class="eyebrow" style="margin:0 0 10px">Live transcript</h4>
+          <div class="transcript" id="vTranscript"><div class="small">The call transcript appears here.</div></div>
+          <div class="talkrow hidden" id="vTalk">
+            <button class="btn ghost" id="vMic">🎙️ Speak</button>
+            <input type="text" id="vText" placeholder="…or type what the broker says and press Enter" />
+          </div>
+          <div class="outcome hidden" id="vOutcome"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INBOX -->
+    <section id="view-inbox" class="hidden">
+      <div class="eyebrow">Step 5 · Close</div>
+      <h2>Inbox agent</h2>
+      <p class="sub">Replies come in on any channel. Claude classifies the intent, answers objections, books demos and sends the trial link. A human is pulled in only when it truly needs one.</p>
+      <div class="grid inbox">
+        <div class="card">
+          <select id="iLead" style="width:100%"></select>
+          <div class="samples" id="samples"></div>
+          <textarea id="iMsg" rows="7" placeholder="Paste or type the broker's reply"></textarea>
+          <div style="margin-top:10px"><button class="btn" id="iGo">Process reply with Claude</button></div>
+        </div>
+        <div class="card" id="iOut"><div class="small">The agent's decision and answer appear here.</div></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="scrim" id="scrim"></div>
+  <aside class="drawer" id="drawer"></aside>
+
+  <script src="/app.js" type="module"></script>
+</body>
+</html>
