@@ -70,6 +70,7 @@ function pipelineCounts() {
 function setStatus(id, s) {
   S.status[id] = s;
   pipelineCounts();
+  document.dispatchEvent(new CustomEvent("outflow:status", { detail: { id, status: s } }));
   if (!$("#view-leads").classList.contains("hidden")) renderLeads();
 }
 
@@ -278,7 +279,7 @@ let campSpend0 = null;
 function renderEcon() {
   const usd = parseFloat($("#spend").textContent.replace("$", "")) || 0;
   if (campSpend0 === null) campSpend0 = usd;
-  const ai = Math.max(0, usd - campSpend0);
+  const ai = Math.max(0, usd - campSpend0) + (S.histCost || 0);
   const n = counts.Contacted;
   const hrs = (n * SDR.minutesPerFirm) / 60;
   $("#econ").innerHTML = [
@@ -294,6 +295,65 @@ function renderFunnel() {
   const max = Math.max(1, counts.Targeted);
   $("#funnel").innerHTML = FUNNEL.map((k) => `<div><span>${k}</span><span class="fb"><i style="width:${(counts[k] / max) * 100}%"></i></span><b>${counts[k]}</b></div>`).join("");
 }
+// ---------- sample outreach history (simulated, so the demo opens mid-campaign) ----------
+const HISTORY = [];
+const OUTCOMES = ["Trial started", "Demo booked", "Engaged", "Contacted", "Demo booked", "Contacted", "Engaged", "Trial started", "Callback", "Contacted", "Demo booked", "Not interested", "Engaged", "Contacted", "Do not contact", "Contacted"];
+const STEPS = {
+  sent: ["mail", "Email sent", "Email"], li: ["linkedin", "LinkedIn note sent", "LinkedIn"], open: ["eye", "Opened email, watched demo video", "Email"],
+  reply: ["message", "Replied: asked about security and pricing", "Email"], optin: ["check", "Clicked “call me”: consent logged", "Email"],
+  call: ["phone", "AI call: qualified, 6 handlers quoting by hand", "Call"], demo: ["calendar", "Demo booked for Thursday 14:30", "Call"],
+  trial: ["rocket", "Trial started, connecting insurer portals", "Product"], cb: ["refresh", "Asked for a callback in January", "Call"],
+  no: ["x", "Replied: not interested, nurture in 6 months", "Email"], stop: ["ban", "Unsubscribed: suppressed on every channel", "Email"],
+};
+const PATH = {
+  "Trial started": ["sent", "li", "open", "optin", "call", "demo", "trial"], "Demo booked": ["sent", "li", "open", "reply", "optin", "call", "demo"],
+  Engaged: ["sent", "li", "open", "reply"], Contacted: ["sent", "li"], Callback: ["sent", "open", "optin", "call", "cb"],
+  "Not interested": ["sent", "li", "no"], "Do not contact": ["sent", "stop"],
+};
+function seedHistory() {
+  const pool = S.leads.filter((l) => l.cluster !== "network" && l.compliance.email.ok).slice(0, 26);
+  OUTCOMES.forEach((outcome, i) => {
+    const l = pool[(i * 7) % pool.length];
+    if (S.status[l.id]) return;
+    S.status[l.id] = outcome;
+    const steps = PATH[outcome], end = 1 + i * 5, gap = 14 + (i % 4) * 5; // latest step i*5 h ago, earlier steps spaced back
+    steps.forEach((k, j) => {
+      const [ic, text, ch] = STEPS[k];
+      HISTORY.push({ lead: l, ic, text, ch, hoursAgo: end + (steps.length - 1 - j) * gap });
+    });
+  });
+  HISTORY.sort((a, b) => a.hoursAgo - b.hoursAgo);
+  const st = Object.values(S.status);
+  counts.Targeted += st.length;
+  counts.Contacted += st.length;
+  counts["Engaged (open / accept)"] += st.filter((x) => !["Contacted", "Do not contact"].includes(x)).length;
+  counts["Replied or answered"] += st.filter((x) => ["Engaged", "Demo booked", "Trial started", "Callback", "Not interested"].includes(x)).length;
+  counts["Demo booked"] += st.filter((x) => ["Demo booked", "Trial started"].includes(x)).length;
+  counts["Trial started"] += st.filter((x) => x === "Trial started").length;
+  S.histCost = st.length * 0.06; // measured: ~$0.05-0.08 of Claude per firm drafted
+}
+const ago = (h) => (h < 24 ? `${h}h ago` : `${Math.round(h / 24)}d ago`);
+function renderRecent() {
+  const st = Object.values(S.status);
+  const n = (f) => st.filter(f).length;
+  $("#recent").innerHTML = `<div class="rstats">
+      <div><b>${HISTORY.filter((h) => h.ch === "Email" && h.text.startsWith("Email sent")).length}</b><span>emails</span></div>
+      <div><b>${HISTORY.filter((h) => h.ch === "LinkedIn").length}</b><span>LinkedIn</span></div>
+      <div><b>${HISTORY.filter((h) => h.ch === "Call").length}</b><span>AI calls</span></div>
+      <div><b>${n((x) => ["Demo booked", "Trial started"].includes(x))}</b><span>demos</span></div>
+      <div class="hl"><b>0</b><span>humans</span></div></div>
+    <div class="rlist">${HISTORY.slice(0, 9).map((h) => `<div class="rrow" data-id="${h.lead.id}">
+      <span class="evic">${icon(h.ic)}</span>
+      <div class="rtx"><b>${esc(h.lead.firm)}</b><span>${esc(h.text)}</span></div>
+      <span class="rmeta"><em>${h.ch}</em><small>${ago(h.hoursAgo)}</small></span></div>`).join("")}</div>
+    <div class="note">Sample history, simulated for the demo. Campaigns you launch here use live Claude drafts.</div>`;
+  $("#recent").onclick = (e) => { const r = e.target.closest(".rrow"); if (r) openDrawer(r.dataset.id); };
+}
+function seedFeed() {
+  const f = $("#feed"); f.innerHTML = "";
+  HISTORY.slice(0, 14).reverse().forEach((h) => f.insertAdjacentHTML("afterbegin", `<div class="ev"><span class="t">${ago(h.hoursAgo)}</span><span class="evic">${icon(h.ic)}</span><div><span class="who">${esc(h.lead.firm)}</span><div class="msg">${esc(h.text)}</div></div></div>`));
+}
+
 let day0 = 0;
 function feed(lead, msg, ic = "dot", ai = false) {
   const f = $("#feed");
@@ -577,7 +637,11 @@ $("#iGo").addEventListener("click", async () => {
   $("#nLeads").textContent = S.leads.length;
   $("#fCluster").innerHTML += S.clusters.map((c) => `<option value="${c.key}">${esc(c.name)}</option>`).join("");
   hydrateIcons();
-  pipelineCounts(); renderMap(); renderSegments(); renderFunnel(); renderVoiceLeads(); renderInbox();
+  seedHistory();
+  pipelineCounts(); renderMap(); renderRecent(); renderSegments(); renderFunnel(); seedFeed(); renderVoiceLeads(); renderInbox();
+  // Hook for add-on modules (geomap.js): data + actions, then a ready event.
+  window.outflow = { leads: S.leads, clusters: S.clusters, meta: S.meta, status: S.status, openDrawer, show };
+  document.dispatchEvent(new CustomEvent("outflow:ready"));
   // deep links: #leads, #voice, #leads/L001 opens a firm
   const [view, id] = location.hash.slice(1).split("/");
   if (["map", "leads", "campaign", "voice", "inbox"].includes(view)) show(view);

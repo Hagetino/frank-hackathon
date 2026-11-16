@@ -448,3 +448,28 @@ svg.ic { width: 1.1em; height: 1.1em; fill: none; stroke: currentColor; stroke-w
 .mpre { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #samples .mail { border-radius: 14px; border: 1px solid var(--line); padding: 10px 12px; font-size: inherit; color: var(--ink); }
 #samples .mail.on { border-color: rgba(255,122,69,.45); }
+
+.b-geo { grid-column: span 7; display: flex; flex-direction: column; }
+.b-recent { grid-column: span 5; display: flex; flex-direction: column; }
+#geoMap { flex: 1; min-height: 420px; position: relative; }
+@media (max-width: 1200px) { .b-geo, .b-recent { grid-column: span 12; } }
+
+.geo-leads { margin-bottom: 14px; padding: 14px; }
+#geoMapLeads { height: 340px; position: relative; }
+
+/* recent outreach */
+.rstats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 12px; }
+.rstats div { background: rgba(255,255,255,.7); border: 1px solid var(--line); border-radius: 12px; padding: 8px 10px; display: grid; }
+.rstats b { font-size: 20px; font-weight: 400; }
+.rstats span { font-size: 10px; color: var(--muted); }
+.rstats .hl { background: var(--ink); border-color: var(--ink); color: #fff; }
+.rstats .hl span { color: rgba(255,255,255,.6); }
+.rlist { display: grid; gap: 4px; flex: 1; }
+.rrow { display: grid; grid-template-columns: 30px 1fr auto; gap: 10px; align-items: center; padding: 7px 8px; border-radius: 12px; cursor: pointer; transition: background .15s; }
+.rrow:hover { background: rgba(255,255,255,.85); }
+.rtx { display: grid; min-width: 0; }
+.rtx b { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rtx span { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rmeta { display: grid; justify-items: end; gap: 2px; }
+.rmeta em { font-style: normal; font-size: 10px; border: 1px solid var(--line); background: rgba(255,255,255,.85); border-radius: 999px; padding: 1px 7px; }
+.rmeta small { font-size: 10px; color: var(--muted); }

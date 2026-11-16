@@ -6,6 +6,7 @@
   <title>outflow · zero-human outreach</title>
   <link rel="stylesheet" href="/styles.css" />
   <link rel="stylesheet" href="/dropdown.css" />
+  <link rel="stylesheet" href="/geomap.css" />
 </head>
 <body>
   <div class="app">
@@ -86,6 +87,15 @@
           <div class="cbars" id="clusterBars"></div>
         </div>
 
+        <div class="card b-geo">
+          <div class="card-hd"><div><b>Where the prospects are</b><div class="small">UK brokers by fit score and outreach status</div></div><button class="ibtn sm" data-goto="leads" title="All leads"><i data-ic="arrow"></i></button></div>
+          <div id="geoMap"></div>
+        </div>
+        <div class="card b-recent">
+          <div class="card-hd"><div><b>Recent outreach</b><div class="small">Last 7 days · all done by AI</div></div><button class="ibtn sm dark" data-goto="campaign" title="Campaign"><i data-ic="arrow"></i></button></div>
+          <div id="recent"></div>
+        </div>
+
         <div class="b-tiles" id="clusterCards"></div>
 
         <div class="card b-method">
@@ -105,6 +115,7 @@
         <select id="fTier"><option value="">All tiers</option><option>A</option><option>B</option><option>C</option></select>
         <input type="text" id="fSearch" placeholder="Search firm or town" />
       </div>
+      <div class="card geo-leads"><div id="geoMapLeads"></div></div>
       <table>
         <thead><tr><th>#</th><th>Firm</th><th>Cluster</th><th>Fit score</th><th>Tier</th><th>Year-1 value</th><th>Channels</th><th>Status</th></tr></thead>
         <tbody id="leadRows"></tbody>
@@ -193,5 +204,6 @@
 
   <script src="/app.js" type="module"></script>
   <script src="/dropdown.js" defer></script>
+  <script src="/geomap.js" defer></script>
 </body>
 </html>
