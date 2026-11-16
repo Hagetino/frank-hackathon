@@ -61,7 +61,8 @@
 .gm-legend i.size { background: radial-gradient(circle, #9aa3b2 0 2px, transparent 2.5px), radial-gradient(circle, #9aa3b2 0 4px, transparent 4.5px); background-size: 6px 6px, 10px 10px; background-position: 0 2px, 5px 0; background-repeat: no-repeat; width: 15px; height: 10px; border-radius: 0; }
 
 /* compact variant for the short Leads banner */
-#geoMapLeads .gm-lg-c { flex-direction: row; flex-wrap: wrap; max-width: 300px; }
+#geoMapLeads .gm-legend { max-width: 330px; }
+#geoMapLeads .gm-lg-c { flex-direction: row; flex-wrap: wrap; }
 #geoMapLeads .gm-chips { flex-direction: row; }
 
 /* tooltip */

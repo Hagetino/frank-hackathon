@@ -81,7 +81,7 @@
     const get = (i) => closed ? p[(i + n) % n] : p[Math.max(0, Math.min(n - 1, i))];
     const f = (q) => q[0].toFixed(1) + "," + q[1].toFixed(1);
     let d = "M" + f(p[0]);
-    const t = 0.16;
+    const t = 0.12;
     for (let i = 0; i < (closed ? n : n - 1); i++) {
       const p0 = get(i - 1), p1 = get(i), p2 = get(i + 1), p3 = get(i + 2);
       const c1 = [p1[0] + (p2[0] - p0[0]) * t, p1[1] + (p2[1] - p0[1]) * t];
@@ -196,6 +196,20 @@
     const rk = Math.max(0.75, Math.min(1.2, H / 480));
     list.forEach((t) => { t.r = (4.5 + 7 * Math.sqrt(t.n / maxN)) * rk; });
     list.sort((a, b) => b.n - a.n); // big first, small drawn on top
+    // gentle de-overlap so clustered towns (Leeds/Harrogate/York...) stay readable
+    for (let it = 0; it < 40; it++) {
+      let moved = false;
+      for (let i = 0; i < list.length; i++) for (let j = i + 1; j < list.length; j++) {
+        const a = list[i], b = list[j];
+        let dx = b.xy[0] - a.xy[0], dy = b.xy[1] - a.xy[1];
+        const d = Math.hypot(dx, dy) || 0.01, min = a.r + b.r + 2;
+        if (d < min) {
+          const k = (min - d) / d / 2; dx *= k; dy *= k;
+          a.xy = [a.xy[0] - dx, a.xy[1] - dy]; b.xy = [b.xy[0] + dx, b.xy[1] + dy]; moved = true;
+        }
+      }
+      if (!moved) break;
+    }
 
     const g = this.id;
     let svg = `<defs>
