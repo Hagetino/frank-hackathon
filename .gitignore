@@ -3,6 +3,7 @@ node_modules/
 .spend.json
 .vercel
 .env*
+!.env.example
 .DS_Store
 
 # outreach + cycle runtime files

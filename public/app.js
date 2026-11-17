@@ -43,7 +43,7 @@ const S = { leads: [], clusters: [], meta: {}, status: {}, drafts: {}, budget: 1
 
 async function api(path, body, retry = true) {
   const headers = { "content-type": "application/json", "x-demo-key": localStorage.getItem("demoKey") || "" };
-  const res = await fetch(path, body ? { method: "POST", headers, body: JSON.stringify(body) } : {});
+  const res = await fetch(path, body ? { method: "POST", headers, body: JSON.stringify(body) } : { headers });
   const data = await res.json();
   if (res.status === 401 && retry) {
     const key = prompt("Demo passcode (AI features are protected so nobody drains the credit):");

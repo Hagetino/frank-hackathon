@@ -44,7 +44,17 @@
     const $ = (s) => document.querySelector(s);
     const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
     const done = (c) => { $("#form").innerHTML = `<span class="status">Signed</span><p class="sub" style="margin-top:12px">${esc(c.signed_by)} signed on ${c.signed_at.slice(0, 10)} at ${c.signed_at.slice(11, 16)} UTC. Your trial is open; onboarding starts by email.</p>`; };
-    const res = await fetch(`/api/outreach/contract?p=${encodeURIComponent(id)}`);
+    async function contractRequest(retry = true) {
+      const res = await fetch(`/api/outreach/contract?p=${encodeURIComponent(id)}`, {
+        headers: { "x-demo-key": localStorage.getItem("demoKey") || "" },
+      });
+      if (res.status === 401 && retry) {
+        const key = prompt("Team passcode:");
+        if (key) { localStorage.setItem("demoKey", key.trim()); return contractRequest(false); }
+      }
+      return res;
+    }
+    const res = await contractRequest();
     const data = await res.json();
     if (!res.ok || !data.contract) { $("#form").innerHTML = `<p class="sub">${esc(data.error || "No agreement is waiting for this link.")}</p>`; }
     else {

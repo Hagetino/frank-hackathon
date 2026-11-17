@@ -28,7 +28,7 @@ http.createServer(async (req, res) => {
     return res.end(JSON.stringify(api[1]));
   }
   const path = normalize(join(here, "public", url.pathname === "/" ? "index.html" : url.pathname));
-  if (!path.startsWith(join(here, "public"))) { res.writeHead(403); return res.end(); }
+  if (!path.startsWith(join(here, "public") + "/")) { res.writeHead(403); return res.end(); }
   try {
     const file = await readFile(path);
     res.writeHead(200, { "content-type": MIME[extname(path)] || "application/octet-stream" });

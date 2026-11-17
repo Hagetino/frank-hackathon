@@ -2,9 +2,13 @@
 
 Zero-human outreach engine: UK broker clusters, ranking, multichannel AI drafts, voice agent, inbox agent.
 
-Run: `npm install`, create `.env` with `ANTHROPIC_API_KEY=...`, then `npm start` and open http://localhost:3000.
+Run: `npm install`, copy `.env.example` to `.env`, set `ANTHROPIC_API_KEY` and a long random `DEMO_PASSCODE`, then `npm start` and open http://localhost:3000. Enter the passcode when prompted.
 
 Never commit `.env`.
+
+Every API route requires the passcode, including state, outreach data, contract reads and signing, and speech generation. Without `DEMO_PASSCODE`, the API returns 503 and performs no work. Set it in the hosting provider's server environment for hosted deployments; never put it in frontend files or URLs. The signing page is part of the protected team demo and requires the same passcode.
+
+`outreach/prospects.json` currently contains published business contact addresses with source URLs and no reply threads or signed agreements. Do not commit the file after using it with private replies or signatures. The lead dataset is fictional demo data. A public repository also exposes its Git history, so deleting a leaked credential from the latest version would still require revoking that credential.
 
 ## Outreach desk and closing cycle
 
